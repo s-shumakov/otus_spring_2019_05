@@ -1,6 +1,5 @@
 package ru.otus.spring01.service;
 
-import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import org.springframework.core.io.ClassPathResource;
 import ru.otus.spring01.domain.CsvQuestion;
@@ -19,8 +18,8 @@ public class QuestionsReaderServiceImpl implements QuestionsReaderService {
     @Override
     public List<CsvQuestion> readQuestions() {
         List<CsvQuestion> csvQuestions = new ArrayList<>();
-        try {
-            InputStream resource = new ClassPathResource(path).getInputStream();
+
+        try (InputStream resource = new ClassPathResource(path).getInputStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
             csvQuestions = this.parseToBean(reader);
             reader.close();
@@ -31,11 +30,10 @@ public class QuestionsReaderServiceImpl implements QuestionsReaderService {
     }
 
     public List<CsvQuestion> parseToBean(Reader reader) {
-        CsvToBean<CsvQuestion> csvToBean = new CsvToBeanBuilder(reader)
+        return new CsvToBeanBuilder<CsvQuestion>(reader)
                 .withType(CsvQuestion.class)
                 .withIgnoreLeadingWhiteSpace(true)
-                .build();
-        return csvToBean.parse();
+                .build().parse();
     }
 
 }
