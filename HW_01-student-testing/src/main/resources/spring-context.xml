@@ -5,10 +5,10 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="testingService" class="ru.otus.spring01.service.TestingServiceImpl">
-        <constructor-arg name="questionsReaderService" ref="questionsReaderService"></constructor-arg>
+        <constructor-arg name="questionsReaderService" ref="questionsReaderService"/>
     </bean>
 
     <bean id="questionsReaderService" class="ru.otus.spring01.service.QuestionsReaderServiceImpl">
-        <constructor-arg value="csv/questions.csv"></constructor-arg>
+        <constructor-arg value="csv/questions.csv"/>
     </bean>
 </beans>
