@@ -1,22 +1,15 @@
 package ru.otus.spring01.domain;
 
+import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
+import org.apache.commons.collections4.MultiValuedMap;
 
 public class CsvQuestion {
     @CsvBindByName
     private String question;
 
-    @CsvBindByName
-    private String answerA;
-
-    @CsvBindByName
-    private String answerB;
-
-    @CsvBindByName
-    private String answerC;
-
-    @CsvBindByName
-    private String answerD;
+    @CsvBindAndJoinByName(column = "answer", elementType = String.class)
+    private MultiValuedMap<String, String> answers;
 
     @CsvBindByName
     private String trueAnswer;
@@ -29,43 +22,19 @@ public class CsvQuestion {
         this.question = question;
     }
 
-    public String getAnswerA() {
-        return answerA;
-    }
-
-    public void setAnswerA(String answerA) {
-        this.answerA = answerA;
-    }
-
-    public String getAnswerB() {
-        return answerB;
-    }
-
-    public void setAnswerB(String answerB) {
-        this.answerB = answerB;
-    }
-
-    public String getAnswerC() {
-        return answerC;
-    }
-
-    public void setAnswerC(String answerC) {
-        this.answerC = answerC;
-    }
-
-    public String getAnswerD() {
-        return answerD;
-    }
-
-    public void setAnswerD(String answerD) {
-        this.answerD = answerD;
-    }
-
     public String getTrueAnswer() {
         return trueAnswer;
     }
 
     public void setTrueAnswer(String trueAnswer) {
         this.trueAnswer = trueAnswer;
+    }
+
+    public MultiValuedMap getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(MultiValuedMap<String, String> answers) {
+        this.answers = answers;
     }
 }

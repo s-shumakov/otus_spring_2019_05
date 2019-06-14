@@ -1,6 +1,5 @@
 package ru.otus.spring01.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -36,11 +35,9 @@ public class TestingServiceImpl implements TestingService {
         for (CsvQuestion csvQuestion : csvQuestions) {
             System.out.println(csvQuestion.getQuestion());
             System.out.println(messageSource.getMessage("choose.answer", null, this.locale));
-            System.out.println(csvQuestion.getAnswerA());
-            System.out.println(csvQuestion.getAnswerB());
-            System.out.println(csvQuestion.getAnswerC());
-            System.out.println(csvQuestion.getAnswerD());
+            csvQuestion.getAnswers().values().stream().sorted().forEach(System.out::println);
             String answer = scanner.nextLine();
+            System.out.println();
             if (answer.equals(csvQuestion.getTrueAnswer())) {
                 trueAnswers++;
             }
