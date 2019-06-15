@@ -1,9 +1,9 @@
 package ru.otus.spring01.service;
 
 import com.opencsv.bean.CsvToBeanBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import ru.otus.spring01.config.ConfigProperties;
 import ru.otus.spring01.domain.CsvQuestion;
 
 import java.io.*;
@@ -13,15 +13,19 @@ import java.util.Locale;
 
 @Service
 public class QuestionsReaderServiceImpl implements QuestionsReaderService {
-    @Value("${questions.file.path}")
     private String path;
-    @Value("${locale}")
     private Locale locale;
+
+    public QuestionsReaderServiceImpl(
+            ConfigProperties configProperties) {
+        this.path = configProperties.getQuestionsFilePath();
+        this.locale = new Locale(configProperties.getLocale());
+    }
 
     @Override
     public List<CsvQuestion> readQuestions() {
         List<CsvQuestion> csvQuestions = new ArrayList<>();
-        if(this.locale.getLanguage().equalsIgnoreCase("en")){
+        if (this.locale.getLanguage().equalsIgnoreCase("en")) {
             this.path = this.path.replace(".csv", "_" + locale.getLanguage() + ".csv");
         }
         try (InputStream resource = new ClassPathResource(path).getInputStream()) {

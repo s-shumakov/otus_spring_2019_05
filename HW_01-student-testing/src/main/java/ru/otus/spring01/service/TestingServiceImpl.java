@@ -1,8 +1,8 @@
 package ru.otus.spring01.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import ru.otus.spring01.config.ConfigProperties;
 import ru.otus.spring01.domain.CsvQuestion;
 
 import java.util.List;
@@ -13,16 +13,17 @@ import java.util.Scanner;
 public class TestingServiceImpl implements TestingService {
     private QuestionsReaderService questionsReaderService;
     private MessageSource messageSource;
-    @Value("${answers.correct.number}")
-    private int correctAnswersNumber;
-    @Value("${locale}")
+    private int answersCorrectNumber;
     private Locale locale;
 
     public TestingServiceImpl(
             QuestionsReaderService questionsReaderService,
-            MessageSource messageSource) {
+            MessageSource messageSource,
+            ConfigProperties configProperties) {
         this.questionsReaderService = questionsReaderService;
         this.messageSource = messageSource;
+        this.answersCorrectNumber = configProperties.getAnswersCorrectNumber();
+        this.locale = new Locale(configProperties.getLocale());
     }
 
     @Override
@@ -47,7 +48,7 @@ public class TestingServiceImpl implements TestingService {
                         "correct.answers.count", new String[]{
                                 userName, String.valueOf(trueAnswers), String.valueOf(csvQuestions.size())
                         }, this.locale));
-        if (trueAnswers < correctAnswersNumber) {
+        if (trueAnswers < answersCorrectNumber) {
             System.out.println(messageSource.getMessage("test.failed", null, this.locale));
         } else {
             System.out.println(messageSource.getMessage("test.passed", null, this.locale));
