@@ -38,7 +38,7 @@ public class QuestionsReaderServiceImpl implements QuestionsReaderService {
         return csvQuestions;
     }
 
-    public List<CsvQuestion> parseToBean(Reader reader) {
+    private List<CsvQuestion> parseToBean(Reader reader) {
         return new CsvToBeanBuilder<CsvQuestion>(reader)
                 .withType(CsvQuestion.class)
                 .withIgnoreLeadingWhiteSpace(true)

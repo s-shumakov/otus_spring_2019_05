@@ -30,7 +30,7 @@ public class CsvQuestion {
         this.trueAnswer = trueAnswer;
     }
 
-    public MultiValuedMap getAnswers() {
+    public MultiValuedMap<String, String> getAnswers() {
         return answers;
     }
 

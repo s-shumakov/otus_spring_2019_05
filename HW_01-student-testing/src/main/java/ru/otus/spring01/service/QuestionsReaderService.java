@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface QuestionsReaderService {
     List<CsvQuestion> readQuestions();
-    List<CsvQuestion> parseToBean(Reader reader);
 }
