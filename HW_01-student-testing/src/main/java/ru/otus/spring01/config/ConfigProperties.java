@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties
+@ConfigurationProperties("student-testing")
 public class ConfigProperties {
     private String questionsFilePath;
     private int answersCorrectNumber;
