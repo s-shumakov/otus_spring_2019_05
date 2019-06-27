@@ -10,10 +10,8 @@ public class InputOutputServiceImpl implements InputOutputService {
     private final Scanner scanner;
     private final MessageSource messageSource;
 
-    public InputOutputServiceImpl(
-            Scanner scanner,
-            MessageSource messageSource) {
-        this.scanner = scanner;
+    public InputOutputServiceImpl(MessageSource messageSource) {
+        this.scanner = new Scanner(System.in);
         this.messageSource = messageSource;
     }
 
@@ -30,5 +28,11 @@ public class InputOutputServiceImpl implements InputOutputService {
     @Override
     public String next() {
         return scanner.next();
+    }
+
+    @Override
+    public String println(String message) {
+        System.out.println(message);
+        return message;
     }
 }

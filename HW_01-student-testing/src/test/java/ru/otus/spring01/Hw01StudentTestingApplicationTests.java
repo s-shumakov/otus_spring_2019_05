@@ -19,7 +19,6 @@ import ru.otus.spring01.service.TestingServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -42,36 +41,15 @@ public class Hw01StudentTestingApplicationTests {
     @Test
     public void runTestTest() {
         List<CsvQuestion> questions = new ArrayList<>();
-        CsvQuestion csvQuestion = new CsvQuestion();
-        csvQuestion.setQuestion("Test question");
-        csvQuestion.setTrueAnswer("a");
         MultiValuedMap<String, String> answers = new ArrayListValuedHashMap<>();
         answers.put("answer", "a. test answer");
-        answers.put("answer", "b. test answer");
-        answers.put("answer", "c. test answer");
-        answers.put("answer", "d. test answer");
-        csvQuestion.setAnswers(answers);
+        CsvQuestion csvQuestion = new CsvQuestion("Test question", answers, "a");
         questions.add(csvQuestion);
 
-        String name = "Test User";
-        Locale locale = new Locale("ru");
-
-        given(inputOutputService.nextLine()).willReturn(name);
+        given(inputOutputService.nextLine()).willReturn("Test User");
         given(inputOutputService.hasNext(TestingServiceImpl.ANSWERS_PATTERN)).willReturn(true);
         given(inputOutputService.next()).willReturn("a");
         given(questionsReaderService.readQuestions()).willReturn(questions);
-        given(this.messageSource.getMessage(TestingServiceImpl.INPUT_NAME, null, locale))
-                .willReturn("Введите имя:");
-        given(this.messageSource.getMessage(TestingServiceImpl.CHOOSE_ANSWER, null, locale))
-                .willReturn("Выберите правильный ответ (a, b, c, d):");
-        given(this.messageSource.getMessage(
-                TestingServiceImpl.CORRECT_ANSWERS_COUNT,
-                new String[]{name, String.valueOf(1), String.valueOf(1)},
-                locale))
-                .willReturn(name + ", количество правильных ответов: 1 из " +
-                        configProperties.getAnswersCorrectNumber());
-        given(this.messageSource.getMessage(TestingServiceImpl.TEST_PASSED, null, locale))
-                .willReturn("Тест пройден!");
 
         testingService.runTest();
 

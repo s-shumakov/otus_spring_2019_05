@@ -38,39 +38,39 @@ public class TestingServiceImpl implements TestingService {
 
     @Override
     public void runTest() {
-        System.out.println(messageSource.getMessage(INPUT_NAME, null, this.locale));
+        inputOutputService.println(messageSource.getMessage(INPUT_NAME, null, this.locale));
         String line = inputOutputService.nextLine();
         while (line.isEmpty()) {
-            System.out.println(messageSource.getMessage(INCORRECT_INPUT_NAME, null, this.locale));
+            inputOutputService.println(messageSource.getMessage(INCORRECT_INPUT_NAME, null, this.locale));
             line = inputOutputService.nextLine();
         }
         String userName = line;
         this.trueAnswers = 0;
         List<CsvQuestion> csvQuestions = this.questionsReaderService.readQuestions();
         for (CsvQuestion csvQuestion : csvQuestions) {
-            System.out.println(csvQuestion.getQuestion());
-            System.out.println(messageSource.getMessage(CHOOSE_ANSWER, null, this.locale));
-            csvQuestion.getAnswers().values().stream().sorted().forEach(System.out::println);
+            inputOutputService.println(csvQuestion.getQuestion());
+            inputOutputService.println(messageSource.getMessage(CHOOSE_ANSWER, null, this.locale));
+            csvQuestion.getAnswers().values().stream().sorted().forEach(inputOutputService::println);
             while (!inputOutputService.hasNext(ANSWERS_PATTERN)) {
-                System.out.println(messageSource.getMessage(INCORRECT_INPUT_ANSWER, null, this.locale));
+                inputOutputService.println(messageSource.getMessage(INCORRECT_INPUT_ANSWER, null, this.locale));
                 inputOutputService.next();
             }
             String answer = inputOutputService.next();
-            System.out.println();
+            inputOutputService.println("");
             if (answer.equals(csvQuestion.getTrueAnswer())) {
                 this.trueAnswers++;
             }
         }
-        System.out.println(
+        inputOutputService.println(
                 messageSource.getMessage(
                         CORRECT_ANSWERS_COUNT,
                         new String[]{userName, String.valueOf(this.trueAnswers), String.valueOf(csvQuestions.size())},
                         this.locale)
         );
         if (trueAnswers < answersCorrectNumber) {
-            System.out.println(messageSource.getMessage(TEST_FAILED, null, this.locale));
+            inputOutputService.println(messageSource.getMessage(TEST_FAILED, null, this.locale));
         } else {
-            System.out.println(messageSource.getMessage(TEST_PASSED, null, this.locale));
+            inputOutputService.println(messageSource.getMessage(TEST_PASSED, null, this.locale));
         }
     }
 
