@@ -1,6 +1,5 @@
 package ru.otus.spring01.service;
 
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import ru.otus.spring01.config.ConfigProperties;
 import ru.otus.spring01.domain.CsvQuestion;
@@ -10,7 +9,6 @@ import java.util.*;
 @Service
 public class TestingServiceImpl implements TestingService {
     private final QuestionsReaderService questionsReaderService;
-    private final MessageSource messageSource;
     private final InputOutputService inputOutputService;
     private int answersCorrectNumber;
     private Locale locale;
@@ -26,11 +24,9 @@ public class TestingServiceImpl implements TestingService {
 
     public TestingServiceImpl(
             QuestionsReaderService questionsReaderService,
-            MessageSource messageSource,
             ConfigProperties configProperties,
             InputOutputService inputOutputService) {
         this.questionsReaderService = questionsReaderService;
-        this.messageSource = messageSource;
         this.inputOutputService = inputOutputService;
         this.answersCorrectNumber = configProperties.getAnswersCorrectNumber();
         this.locale = new Locale(configProperties.getLocale());
@@ -38,10 +34,10 @@ public class TestingServiceImpl implements TestingService {
 
     @Override
     public void runTest() {
-        inputOutputService.println(messageSource.getMessage(INPUT_NAME, null, this.locale));
+        inputOutputService.println(INPUT_NAME, this.locale);
         String line = inputOutputService.nextLine();
         while (line.isEmpty()) {
-            inputOutputService.println(messageSource.getMessage(INCORRECT_INPUT_NAME, null, this.locale));
+            inputOutputService.println(INCORRECT_INPUT_NAME, this.locale);
             line = inputOutputService.nextLine();
         }
         String userName = line;
@@ -49,10 +45,10 @@ public class TestingServiceImpl implements TestingService {
         List<CsvQuestion> csvQuestions = this.questionsReaderService.readQuestions();
         for (CsvQuestion csvQuestion : csvQuestions) {
             inputOutputService.println(csvQuestion.getQuestion());
-            inputOutputService.println(messageSource.getMessage(CHOOSE_ANSWER, null, this.locale));
+            inputOutputService.println(CHOOSE_ANSWER,  this.locale);
             csvQuestion.getAnswers().values().stream().sorted().forEach(inputOutputService::println);
             while (!inputOutputService.hasNext(ANSWERS_PATTERN)) {
-                inputOutputService.println(messageSource.getMessage(INCORRECT_INPUT_ANSWER, null, this.locale));
+                inputOutputService.println(INCORRECT_INPUT_ANSWER,  this.locale);
                 inputOutputService.next();
             }
             String answer = inputOutputService.next();
@@ -62,15 +58,14 @@ public class TestingServiceImpl implements TestingService {
             }
         }
         inputOutputService.println(
-                messageSource.getMessage(
-                        CORRECT_ANSWERS_COUNT,
-                        new String[]{userName, String.valueOf(this.trueAnswers), String.valueOf(csvQuestions.size())},
-                        this.locale)
+                CORRECT_ANSWERS_COUNT,
+                new String[]{userName, String.valueOf(this.trueAnswers), String.valueOf(csvQuestions.size())},
+                this.locale
         );
         if (trueAnswers < answersCorrectNumber) {
-            inputOutputService.println(messageSource.getMessage(TEST_FAILED, null, this.locale));
+            inputOutputService.println(TEST_FAILED, this.locale);
         } else {
-            inputOutputService.println(messageSource.getMessage(TEST_PASSED, null, this.locale));
+            inputOutputService.println(TEST_PASSED, this.locale);
         }
     }
 
