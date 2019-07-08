@@ -11,7 +11,6 @@ public class TestingServiceImpl implements TestingService {
     private final QuestionsReaderService questionsReaderService;
     private final InputOutputService inputOutputService;
     private int answersCorrectNumber;
-    private Locale locale;
     private int trueAnswers = 0;
     public static final String ANSWERS_PATTERN = "[a-dA-D]";
     public static final String INPUT_NAME = "input.name";
@@ -29,15 +28,14 @@ public class TestingServiceImpl implements TestingService {
         this.questionsReaderService = questionsReaderService;
         this.inputOutputService = inputOutputService;
         this.answersCorrectNumber = configProperties.getAnswersCorrectNumber();
-        this.locale = new Locale(configProperties.getLocale());
     }
 
     @Override
     public void runTest() {
-        inputOutputService.println(INPUT_NAME, this.locale);
+        inputOutputService.printMessage(INPUT_NAME);
         String line = inputOutputService.nextLine();
         while (line.isEmpty()) {
-            inputOutputService.println(INCORRECT_INPUT_NAME, this.locale);
+            inputOutputService.println(INCORRECT_INPUT_NAME);
             line = inputOutputService.nextLine();
         }
         String userName = line;
@@ -45,10 +43,10 @@ public class TestingServiceImpl implements TestingService {
         List<CsvQuestion> csvQuestions = this.questionsReaderService.readQuestions();
         for (CsvQuestion csvQuestion : csvQuestions) {
             inputOutputService.println(csvQuestion.getQuestion());
-            inputOutputService.println(CHOOSE_ANSWER,  this.locale);
+            inputOutputService.printMessage(CHOOSE_ANSWER);
             csvQuestion.getAnswers().values().stream().sorted().forEach(inputOutputService::println);
             while (!inputOutputService.hasNext(ANSWERS_PATTERN)) {
-                inputOutputService.println(INCORRECT_INPUT_ANSWER,  this.locale);
+                inputOutputService.printMessage(INCORRECT_INPUT_ANSWER);
                 inputOutputService.next();
             }
             String answer = inputOutputService.next();
@@ -57,15 +55,14 @@ public class TestingServiceImpl implements TestingService {
                 this.trueAnswers++;
             }
         }
-        inputOutputService.println(
+        inputOutputService.printMessage(
                 CORRECT_ANSWERS_COUNT,
-                new String[]{userName, String.valueOf(this.trueAnswers), String.valueOf(csvQuestions.size())},
-                this.locale
+                new String[]{userName, String.valueOf(this.trueAnswers), String.valueOf(csvQuestions.size())}
         );
         if (trueAnswers < answersCorrectNumber) {
-            inputOutputService.println(TEST_FAILED, this.locale);
+            inputOutputService.printMessage(TEST_FAILED);
         } else {
-            inputOutputService.println(TEST_PASSED, this.locale);
+            inputOutputService.printMessage(TEST_PASSED);
         }
     }
 

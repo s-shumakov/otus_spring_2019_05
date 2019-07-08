@@ -6,7 +6,7 @@ public interface InputOutputService {
     String nextLine();
     boolean hasNext(String pattern);
     String next();
-    String println(String messageKey, Object[] objects, Locale locale);
-    String println(String messageKey, Locale locale);
+    String printMessage(String messageKey, Object[] objects);
+    String printMessage(String messageKey);
     String println(String message);
 }
