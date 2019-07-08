@@ -14,6 +14,15 @@ public class CsvQuestion {
     @CsvBindByName
     private String trueAnswer;
 
+    public CsvQuestion(String question, MultiValuedMap<String, String> answers, String trueAnswer) {
+        this.question = question;
+        this.answers = answers;
+        this.trueAnswer = trueAnswer;
+    }
+
+    public CsvQuestion() {
+    }
+
     public String getQuestion() {
         return question;
     }
