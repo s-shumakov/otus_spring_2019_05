@@ -11,7 +11,8 @@ public class TestingServiceImpl implements TestingService {
     private final QuestionsReaderService questionsReaderService;
     private final InputOutputService inputOutputService;
     private int answersCorrectNumber;
-    private int trueAnswers = 0;
+    private int questionsCount = 0;
+    private Map<String, Integer> results = new HashMap<>();
     public static final String ANSWERS_PATTERN = "[a-dA-D]";
     public static final String INPUT_NAME = "input.name";
     public static final String INCORRECT_INPUT_NAME = "incorrect.input.name";
@@ -31,16 +32,10 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Override
-    public void runTest() {
-        inputOutputService.printMessage(INPUT_NAME);
-        String line = inputOutputService.nextLine();
-        while (line.isEmpty()) {
-            inputOutputService.println(INCORRECT_INPUT_NAME);
-            line = inputOutputService.nextLine();
-        }
-        String userName = line;
-        this.trueAnswers = 0;
+    public void runTest(String userName) {
+        Integer trueAnswers = 0;
         List<CsvQuestion> csvQuestions = this.questionsReaderService.readQuestions();
+        this.setQuestionsCount(csvQuestions.size());
         for (CsvQuestion csvQuestion : csvQuestions) {
             inputOutputService.println(csvQuestion.getQuestion());
             inputOutputService.printMessage(CHOOSE_ANSWER);
@@ -52,22 +47,59 @@ public class TestingServiceImpl implements TestingService {
             String answer = inputOutputService.next();
             inputOutputService.println("");
             if (answer.equals(csvQuestion.getTrueAnswer())) {
-                this.trueAnswers++;
+                trueAnswers++;
             }
         }
+        this.getResults().put(userName, trueAnswers);
+    }
+
+    @Override
+    public Integer getResult(String userName) {
+        Integer correctAnswers = this.getResults().get(userName);
         inputOutputService.printMessage(
                 CORRECT_ANSWERS_COUNT,
-                new String[]{userName, String.valueOf(this.trueAnswers), String.valueOf(csvQuestions.size())}
+                new String[]{userName,
+                        String.valueOf(correctAnswers),
+                        String.valueOf(this.getQuestionsCount())
+                }
         );
-        if (trueAnswers < answersCorrectNumber) {
+        if (correctAnswers < this.getAnswersCorrectNumber()) {
             inputOutputService.printMessage(TEST_FAILED);
         } else {
             inputOutputService.printMessage(TEST_PASSED);
         }
+        return correctAnswers;
     }
 
     @Override
-    public int getTrueAnswers() {
-        return trueAnswers;
+    public String getUserName() {
+        inputOutputService.printMessage(INPUT_NAME);
+        String userName = inputOutputService.nextLine();
+        while (userName.isEmpty()) {
+            inputOutputService.printMessage(INCORRECT_INPUT_NAME);
+            userName = inputOutputService.nextLine();
+        }
+        return userName;
     }
+
+    public Map<String, Integer> getResults() {
+        return results;
+    }
+
+    public void setResults(Map<String, Integer> results) {
+        this.results = results;
+    }
+
+    public int getQuestionsCount() {
+        return questionsCount;
+    }
+
+    public void setQuestionsCount(int questionsCount) {
+        this.questionsCount = questionsCount;
+    }
+
+    public int getAnswersCorrectNumber() {
+        return answersCorrectNumber;
+    }
+
 }
