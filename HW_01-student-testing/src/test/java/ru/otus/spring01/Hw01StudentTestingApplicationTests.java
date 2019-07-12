@@ -42,18 +42,19 @@ public class Hw01StudentTestingApplicationTests {
     public void runTestTest() {
         List<CsvQuestion> questions = new ArrayList<>();
         MultiValuedMap<String, String> answers = new ArrayListValuedHashMap<>();
+        String userName = "Test User";
         answers.put("answer", "a. test answer");
         CsvQuestion csvQuestion = new CsvQuestion("Test question", answers, "a");
         questions.add(csvQuestion);
 
-        given(inputOutputService.nextLine()).willReturn("Test User");
+        given(inputOutputService.nextLine()).willReturn(userName);
         given(inputOutputService.hasNext(TestingServiceImpl.ANSWERS_PATTERN)).willReturn(true);
         given(inputOutputService.next()).willReturn("a");
         given(questionsReaderService.readQuestions()).willReturn(questions);
 
-        testingService.runTest();
+        testingService.runTest(userName);
 
-        assertThat(testingService.getTrueAnswers()).isEqualTo(configProperties.getAnswersCorrectNumber());
+        assertThat(testingService.getResult(userName)).isEqualTo(configProperties.getAnswersCorrectNumber());
     }
 
 }
