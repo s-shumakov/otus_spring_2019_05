@@ -1,10 +1,12 @@
 package ru.otus.hw.dao;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.domain.Book;
 import ru.otus.hw.mapper.BookMapper;
+import ru.otus.hw.service.OutputService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +15,11 @@ import java.util.Map;
 @Repository
 public class BookDaoJdbc implements BookDao {
     private final NamedParameterJdbcOperations jdbc;
+    private final OutputService outputService;
 
-    public BookDaoJdbc(NamedParameterJdbcOperations jdbc) {
+    public BookDaoJdbc(NamedParameterJdbcOperations jdbc, OutputService outputService) {
         this.jdbc = jdbc;
+        this.outputService = outputService;
     }
 
     @Override
@@ -34,10 +38,16 @@ public class BookDaoJdbc implements BookDao {
     public Book findById(Long id) {
         final Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-        return jdbc.queryForObject("select * from books b " +
-                "left join authors a on b.author_id = a.id " +
-                "left join genres g on b.genre_id = g.id " +
-                "where b.id = :id", params, new BookMapper());
+        Book book = null;
+        try {
+            book = jdbc.queryForObject("select * from books b " +
+                    "left join authors a on b.author_id = a.id " +
+                    "left join genres g on b.genre_id = g.id " +
+                    "where b.id = :id", params, new BookMapper());
+        } catch (DataAccessException ex) {
+            outputService.println("Book with id " + id + " not found.");
+        }
+        return book;
     }
 
     @Override
@@ -47,9 +57,10 @@ public class BookDaoJdbc implements BookDao {
                     null,
                     book.getName(),
                     book.getAuthor() != null ? book.getAuthor().getId() : null,
-                    book.getAuthor() != null ? book.getGenre().getId() : null);
-        } catch (DataIntegrityViolationException e) {
-            System.out.println(e.getMessage());
+                    book.getGenre() != null ? book.getGenre().getId() : null);
+            outputService.println("Book with name: " + book.getName()+ " inserted.");
+        } catch (DataIntegrityViolationException ex) {
+            outputService.println("Error insert Book with name: " + book.getName());
         }
     }
 

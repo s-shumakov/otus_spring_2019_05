@@ -4,12 +4,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.domain.Genre;
+import ru.otus.hw.service.OutputService;
 
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +25,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GenreDaoJdbcTest {
     @Autowired
     private GenreDao genreDao;
+    @MockBean
+    OutputService outputService;
+    @MockBean
+    InputStream inputStream;
+    @MockBean
+    PrintStream printStream;
 
     @Test
     public void count() {
@@ -38,6 +48,12 @@ public class GenreDaoJdbcTest {
     public void findById() {
         Genre genre = genreDao.findById(1L);
         assertThat(genre.getId()).isEqualTo(1L);
+    }
+
+    @Test
+    public void findByIdError() {
+        Genre genre = genreDao.findById(0L);
+        assertThat(genre).isNull();
     }
 
     @Test
