@@ -9,6 +9,8 @@ import ru.otus.hw.dao.GenreDao;
 import ru.otus.hw.domain.Author;
 import ru.otus.hw.domain.Book;
 import ru.otus.hw.domain.Genre;
+import ru.otus.hw.exception.DataInsertException;
+import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
 
 import java.util.Collections;
@@ -49,22 +51,26 @@ public class LibraryCommands {
     public void find(
             @ShellOption String table,
             @ShellOption Long id) {
-        switch (table.toLowerCase()) {
-            case "authors":
-                Author author = authorDao.findById(id);
-                outputService.printAuthors(Collections.singletonList(author));
-                break;
-            case "genres":
-                Genre genre = genreDao.findById(id);
-                outputService.printGenres(Collections.singletonList(genre));
-                break;
-            case "books":
-                Book book = bookDao.findById(id);
-                outputService.printBooks(Collections.singletonList(book));
-                break;
-            default:
-                outputService.println("Value '" + table + "' not available, use 'authors', 'genres', 'books'");
-                break;
+        try {
+            switch (table.toLowerCase()) {
+                case "authors":
+                    Author author = authorDao.findById(id);
+                    outputService.printAuthors(Collections.singletonList(author));
+                    break;
+                case "genres":
+                    Genre genre = genreDao.findById(id);
+                    outputService.printGenres(Collections.singletonList(genre));
+                    break;
+                case "books":
+                    Book book = bookDao.findById(id);
+                    outputService.printBooks(Collections.singletonList(book));
+                    break;
+                default:
+                    outputService.println("Value '" + table + "' not available, use 'authors', 'genres', 'books'");
+                    break;
+            }
+        } catch (NotFoundException e) {
+            outputService.println(e.getMessage());
         }
     }
 
@@ -72,13 +78,25 @@ public class LibraryCommands {
     public void insertAuthor(
             @ShellOption String firstName,
             @ShellOption String lastName) {
-        authorDao.insert(new Author(firstName, lastName));
+        try {
+            Author author = new Author(firstName, lastName);
+            authorDao.insert(author);
+            outputService.println("Author with firstName: " + author.getFirstName() + ", lastName: " + author.getLastName() + " inserted.");
+        } catch (DataInsertException e) {
+            outputService.println(e.getMessage());
+        }
     }
 
     @ShellMethod(value = "Insert genre", key = {"ig", "insert-genre"})
     public void insertGenre(
             @ShellOption String genreName) {
-        genreDao.insert(new Genre(genreName));
+        try {
+            Genre genre = new Genre(genreName);
+            genreDao.insert(genre);
+            outputService.println("Genre with genreName: " + genre.getGenreName() + " inserted.");
+        } catch (DataInsertException e) {
+            outputService.println(e.getMessage());
+        }
     }
 
     @ShellMethod(value = "Insert book", key = {"ib", "insert-book"})
@@ -86,8 +104,14 @@ public class LibraryCommands {
             @ShellOption String name,
             @ShellOption Long authorId,
             @ShellOption Long genreId) {
-        Author author = authorDao.findById(authorId);
-        Genre genre = genreDao.findById(genreId);
-        bookDao.insert(new Book(name, author, genre));
+        try {
+            Author author = authorDao.findById(authorId);
+            Genre genre = genreDao.findById(genreId);
+            Book book = new Book(name, author, genre);
+            bookDao.insert(book);
+            outputService.println("Book with name: " + book.getName()+ " inserted.");
+        } catch (DataInsertException e) {
+            outputService.println(e.getMessage());
+        }
     }
 }

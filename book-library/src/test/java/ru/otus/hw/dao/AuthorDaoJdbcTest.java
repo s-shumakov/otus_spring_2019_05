@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.domain.Author;
 import ru.otus.hw.domain.ConsoleContext;
+import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
 
 import java.io.InputStream;
@@ -51,7 +52,7 @@ public class AuthorDaoJdbcTest {
         assertThat(author.getId()).isEqualTo(1L);
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void findByIdError() {
         Author author = authorDao.findById(0L);
         assertThat(author).isNull();

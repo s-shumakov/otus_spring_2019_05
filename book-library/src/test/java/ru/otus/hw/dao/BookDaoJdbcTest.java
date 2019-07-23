@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.domain.Book;
+import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
 
 import java.io.InputStream;
@@ -51,7 +52,7 @@ public class BookDaoJdbcTest {
         assertThat(book.getId()).isEqualTo(1L);
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void findByIdError() {
         Book book = bookDao.findById(0L);
         assertThat(book).isNull();

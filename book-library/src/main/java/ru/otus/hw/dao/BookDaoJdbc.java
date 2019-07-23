@@ -5,6 +5,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.domain.Book;
+import ru.otus.hw.exception.DataInsertException;
+import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.service.OutputService;
 
@@ -45,7 +47,7 @@ public class BookDaoJdbc implements BookDao {
                     "left join genres g on b.genre_id = g.id " +
                     "where b.id = :id", params, new BookMapper());
         } catch (DataAccessException ex) {
-            outputService.println("Book with id " + id + " not found.");
+            throw new NotFoundException("Book with id " + id + " not found.");
         }
         return book;
     }
@@ -58,9 +60,8 @@ public class BookDaoJdbc implements BookDao {
                     book.getName(),
                     book.getAuthor() != null ? book.getAuthor().getId() : null,
                     book.getGenre() != null ? book.getGenre().getId() : null);
-            outputService.println("Book with name: " + book.getName()+ " inserted.");
         } catch (DataIntegrityViolationException ex) {
-            outputService.println("Error insert Book with name: " + book.getName());
+            throw new DataInsertException("Error insert Book with name: " + book.getName());
         }
     }
 

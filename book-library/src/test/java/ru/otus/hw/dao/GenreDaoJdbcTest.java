@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.domain.Genre;
+import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
 
 import java.io.InputStream;
@@ -50,10 +51,9 @@ public class GenreDaoJdbcTest {
         assertThat(genre.getId()).isEqualTo(1L);
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void findByIdError() {
         Genre genre = genreDao.findById(0L);
-        assertThat(genre).isNull();
     }
 
     @Test
