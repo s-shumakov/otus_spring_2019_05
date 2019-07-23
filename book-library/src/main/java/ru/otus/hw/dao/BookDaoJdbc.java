@@ -17,11 +17,9 @@ import java.util.Map;
 @Repository
 public class BookDaoJdbc implements BookDao {
     private final NamedParameterJdbcOperations jdbc;
-    private final OutputService outputService;
 
-    public BookDaoJdbc(NamedParameterJdbcOperations jdbc, OutputService outputService) {
+    public BookDaoJdbc(NamedParameterJdbcOperations jdbc) {
         this.jdbc = jdbc;
-        this.outputService = outputService;
     }
 
     @Override
