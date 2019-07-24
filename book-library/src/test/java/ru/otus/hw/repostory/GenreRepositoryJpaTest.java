@@ -1,15 +1,15 @@
-package ru.otus.hw.dao;
+package ru.otus.hw.repostory;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.domain.Book;
+import ru.otus.hw.domain.Genre;
 import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
 
@@ -20,12 +20,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@JdbcTest
-@Import({BookDaoJdbc.class})
+@DataJpaTest
+@Import({GenreRepositoryJpa.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-public class BookDaoJdbcTest {
+public class GenreRepositoryJpaTest {
     @Autowired
-    private BookDao bookDao;
+    private GenreRepository genreRepository;
     @MockBean
     OutputService outputService;
     @MockBean
@@ -33,36 +33,34 @@ public class BookDaoJdbcTest {
     @MockBean
     PrintStream printStream;
 
-
     @Test
     public void count() {
-        int result = bookDao.count();
+        long result = genreRepository.count();
         assertThat(result).isGreaterThan(0);
     }
 
     @Test
     public void findAll() {
-        List<Book> books = bookDao.findAll();
-        assertThat(books.size()).isEqualTo(bookDao.count());
+        List<Genre> genres = genreRepository.findAll();
+        assertThat(new Long(genres.size())).isEqualTo(genreRepository.count());
     }
 
     @Test
     public void findById() {
-        Book book = bookDao.findById(1L);
-        assertThat(book.getId()).isEqualTo(1L);
+        Genre genre = genreRepository.findById(1L);
+        assertThat(genre.getId()).isEqualTo(1L);
     }
 
     @Test(expected = NotFoundException.class)
     public void findByIdError() {
-        Book book = bookDao.findById(0L);
-        assertThat(book).isNull();
+        Genre genre = genreRepository.findById(0L);
     }
 
     @Test
     public void insert() {
-        Book book = new Book("name");
-        int beforeCount = bookDao.count();
-        bookDao.insert(book);
-        assertThat(bookDao.count()).isEqualTo(beforeCount + 1);
+        Genre genre = new Genre("genre_name");
+        long beforeCount = genreRepository.count();
+        genreRepository.insert(genre);
+        assertThat(genreRepository.count()).isEqualTo(beforeCount + 1);
     }
 }
