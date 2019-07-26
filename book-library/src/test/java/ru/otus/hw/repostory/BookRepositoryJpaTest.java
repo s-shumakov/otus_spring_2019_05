@@ -7,8 +7,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.domain.Book;
 import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
@@ -22,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @Import({BookRepositoryJpa.class})
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class BookRepositoryJpaTest {
     @Autowired
     private BookRepository bookRepository;

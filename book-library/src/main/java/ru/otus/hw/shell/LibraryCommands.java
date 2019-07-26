@@ -3,8 +3,10 @@ package ru.otus.hw.shell;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import ru.otus.hw.domain.Comment;
 import ru.otus.hw.repostory.AuthorRepository;
 import ru.otus.hw.repostory.BookRepository;
+import ru.otus.hw.repostory.CommentRepository;
 import ru.otus.hw.repostory.GenreRepository;
 import ru.otus.hw.domain.Author;
 import ru.otus.hw.domain.Book;
@@ -14,18 +16,26 @@ import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
 
 import java.util.Collections;
+import java.util.List;
 
 @ShellComponent
 public class LibraryCommands {
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final BookRepository bookRepository;
+    private final CommentRepository commentRepository;
     private final OutputService outputService;
 
-    public LibraryCommands(AuthorRepository authorRepository, GenreRepository genreRepository, BookRepository bookRepository, OutputService outputService) {
+    public LibraryCommands(
+            AuthorRepository authorRepository,
+            GenreRepository genreRepository,
+            BookRepository bookRepository,
+            CommentRepository commentRepository,
+            OutputService outputService) {
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
         this.bookRepository = bookRepository;
+        this.commentRepository = commentRepository;
         this.outputService = outputService;
     }
 
@@ -109,9 +119,37 @@ public class LibraryCommands {
             Genre genre = genreRepository.findById(genreId);
             Book book = new Book(name, author, genre);
             bookRepository.insert(book);
-            outputService.println("Book with name: " + book.getName()+ " inserted.");
+            outputService.println("Book with name: " + book.getName() + " inserted.");
         } catch (DataInsertException e) {
             outputService.println(e.getMessage());
         }
+    }
+
+    @ShellMethod(value = "Add comment to book", key = {"c", "comment"})
+    public void addComment(
+            @ShellOption String comment,
+            @ShellOption Long bookId) {
+        try {
+            Book book = bookRepository.findById(bookId);
+            Comment commentObj = new Comment(comment, book);
+            commentRepository.insert(commentObj);
+            outputService.println("Comment for book: " + book.getName() + " inserted.");
+        } catch (NotFoundException | DataInsertException e) {
+            outputService.println(e.getMessage());
+        }
+    }
+
+    @ShellMethod(value = "Get comments for book", key = {"lc", "list-comments"})
+    public void listComments(@ShellOption Long bookId) {
+        try {
+            Book book = bookRepository.findById(bookId);
+            List<Comment> comments = commentRepository.findByBook(book);
+            outputService.println("Comments for book:");
+            outputService.printBooks(Collections.singletonList(book));
+            outputService.printComments(comments);
+        } catch (NotFoundException e) {
+            outputService.println(e.getMessage());
+        }
+
     }
 }
