@@ -6,13 +6,13 @@ import org.springframework.shell.standard.ShellOption;
 import ru.otus.hw.domain.Comment;
 import ru.otus.hw.repostory.AuthorRepository;
 import ru.otus.hw.repostory.BookRepository;
-import ru.otus.hw.repostory.CommentRepository;
 import ru.otus.hw.repostory.GenreRepository;
 import ru.otus.hw.domain.Author;
 import ru.otus.hw.domain.Book;
 import ru.otus.hw.domain.Genre;
 import ru.otus.hw.exception.DataInsertException;
 import ru.otus.hw.exception.NotFoundException;
+import ru.otus.hw.service.CommentService;
 import ru.otus.hw.service.OutputService;
 
 import java.util.Collections;
@@ -23,19 +23,19 @@ public class LibraryCommands {
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final BookRepository bookRepository;
-    private final CommentRepository commentRepository;
+    private final CommentService commentService;
     private final OutputService outputService;
 
     public LibraryCommands(
             AuthorRepository authorRepository,
             GenreRepository genreRepository,
             BookRepository bookRepository,
-            CommentRepository commentRepository,
+            CommentService commentService,
             OutputService outputService) {
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
         this.bookRepository = bookRepository;
-        this.commentRepository = commentRepository;
+        this.commentService = commentService;
         this.outputService = outputService;
     }
 
@@ -132,7 +132,7 @@ public class LibraryCommands {
         try {
             Book book = bookRepository.findById(bookId);
             Comment commentObj = new Comment(comment, book);
-            commentRepository.insert(commentObj);
+            commentService.addComment(commentObj);
             outputService.println("Comment for book: " + book.getName() + " inserted.");
         } catch (NotFoundException | DataInsertException e) {
             outputService.println(e.getMessage());
@@ -143,7 +143,7 @@ public class LibraryCommands {
     public void listComments(@ShellOption Long bookId) {
         try {
             Book book = bookRepository.findById(bookId);
-            List<Comment> comments = commentRepository.findByBook(book);
+            List<Comment> comments = commentService.getBookComments(book);
             outputService.println("Comments for book:");
             outputService.printBooks(Collections.singletonList(book));
             outputService.printComments(comments);

@@ -22,6 +22,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> getBookComments(Book book) {
-        return null;
+        return this.commentRepository.findByBook(book);
     }
 }
