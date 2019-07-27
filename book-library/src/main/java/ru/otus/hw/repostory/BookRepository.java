@@ -1,15 +1,7 @@
 package ru.otus.hw.repostory;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.hw.domain.Book;
 
-import java.util.List;
-
-public interface BookRepository {
-    Long count();
-
-    List<Book> findAll();
-
-    Book findById(Long id);
-
-    void insert(Book book);
+public interface BookRepository extends JpaRepository<Book, Long> {
 }

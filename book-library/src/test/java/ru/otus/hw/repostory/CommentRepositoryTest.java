@@ -5,11 +5,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.domain.Genre;
+import ru.otus.hw.domain.Book;
+import ru.otus.hw.domain.Comment;
 import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
 
@@ -21,11 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@Import({GenreRepositoryJpa.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-public class GenreRepositoryJpaTest {
+public class CommentRepositoryTest {
     @Autowired
-    private GenreRepository genreRepository;
+    private CommentRepository commentRepository;
+    @Autowired
+    private BookRepository bookRepository;
     @MockBean
     OutputService outputService;
     @MockBean
@@ -35,32 +36,37 @@ public class GenreRepositoryJpaTest {
 
     @Test
     public void count() {
-        long result = genreRepository.count();
+        Book book = bookRepository.findById(1L).orElse(null);
+        commentRepository.save(new Comment("Test comment", book));
+        long result = commentRepository.count();
         assertThat(result).isGreaterThan(0);
     }
 
     @Test
     public void findAll() {
-        List<Genre> genres = genreRepository.findAll();
-        assertThat(new Long(genres.size())).isEqualTo(genreRepository.count());
+        List<Comment> comments = commentRepository.findAll();
+        assertThat(new Long(comments.size())).isEqualTo(commentRepository.count());
     }
 
     @Test
     public void findById() {
-        Genre genre = genreRepository.findById(1L);
-        assertThat(genre.getId()).isEqualTo(1L);
+        Book book = bookRepository.findById(1L).orElse(null);
+        commentRepository.save(new Comment("Test comment", book));
+        Comment comment = commentRepository.findById(1L).orElse(null);
+        assertThat(comment.getId()).isEqualTo(1L);
     }
 
     @Test(expected = NotFoundException.class)
     public void findByIdError() {
-        Genre genre = genreRepository.findById(0L);
+        Comment comment = commentRepository.findById(0L).orElseThrow(() -> new NotFoundException(""));
     }
 
     @Test
-    public void insert() {
-        Genre genre = new Genre("genre_name");
-        long beforeCount = genreRepository.count();
-        genreRepository.insert(genre);
-        assertThat(genreRepository.count()).isEqualTo(beforeCount + 1);
+    public void insertAndFind() {
+        Book book = bookRepository.findById(1L).orElse(null);
+        Comment comment = new Comment("Test comment", book);
+        commentRepository.save(comment);
+        assertThat(commentRepository.findByBook(book).get(0).getComment()).isEqualTo("Test comment");
     }
+
 }

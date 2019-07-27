@@ -11,7 +11,6 @@ import ru.otus.hw.repostory.GenreRepository;
 import ru.otus.hw.domain.Author;
 import ru.otus.hw.domain.Book;
 import ru.otus.hw.domain.Genre;
-import ru.otus.hw.exception.DataInsertException;
 import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
 
@@ -64,15 +63,18 @@ public class LibraryCommands {
         try {
             switch (table.toLowerCase()) {
                 case "authors":
-                    Author author = authorRepository.findById(id);
+                    Author author = authorRepository.findById(id)
+                            .orElseThrow(() -> new NotFoundException("Author with id " + id + " not found."));
                     outputService.printAuthors(Collections.singletonList(author));
                     break;
                 case "genres":
-                    Genre genre = genreRepository.findById(id);
+                    Genre genre = genreRepository.findById(id)
+                            .orElseThrow(() -> new NotFoundException("Genre with id " + id + " not found."));
                     outputService.printGenres(Collections.singletonList(genre));
                     break;
                 case "books":
-                    Book book = bookRepository.findById(id);
+                    Book book = bookRepository.findById(id)
+                            .orElseThrow(() -> new NotFoundException("Book with id " + id + " not found."));
                     outputService.printBooks(Collections.singletonList(book));
                     break;
                 default:
@@ -88,25 +90,17 @@ public class LibraryCommands {
     public void insertAuthor(
             @ShellOption String firstName,
             @ShellOption String lastName) {
-        try {
-            Author author = new Author(firstName, lastName);
-            authorRepository.insert(author);
-            outputService.println("Author with firstName: " + author.getFirstName() + ", lastName: " + author.getLastName() + " inserted.");
-        } catch (DataInsertException e) {
-            outputService.println(e.getMessage());
-        }
+        Author author = new Author(firstName, lastName);
+        authorRepository.save(author);
+        outputService.println("Author with firstName: " + author.getFirstName() + ", lastName: " + author.getLastName() + " inserted.");
     }
 
     @ShellMethod(value = "Insert genre", key = {"ig", "insert-genre"})
     public void insertGenre(
             @ShellOption String genreName) {
-        try {
-            Genre genre = new Genre(genreName);
-            genreRepository.insert(genre);
-            outputService.println("Genre with genreName: " + genre.getGenreName() + " inserted.");
-        } catch (DataInsertException e) {
-            outputService.println(e.getMessage());
-        }
+        Genre genre = new Genre(genreName);
+        genreRepository.save(genre);
+        outputService.println("Genre with genreName: " + genre.getGenreName() + " inserted.");
     }
 
     @ShellMethod(value = "Insert book", key = {"ib", "insert-book"})
@@ -114,35 +108,31 @@ public class LibraryCommands {
             @ShellOption String name,
             @ShellOption Long authorId,
             @ShellOption Long genreId) {
-        try {
-            Author author = authorRepository.findById(authorId);
-            Genre genre = genreRepository.findById(genreId);
-            Book book = new Book(name, author, genre);
-            bookRepository.insert(book);
-            outputService.println("Book with name: " + book.getName() + " inserted.");
-        } catch (DataInsertException e) {
-            outputService.println(e.getMessage());
-        }
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new NotFoundException("Author with id " + authorId + " not found."));
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new NotFoundException("Genre with id " + genreId + " not found."));
+        Book book = new Book(name, author, genre);
+        bookRepository.save(book);
+        outputService.println("Book with name: " + book.getName() + " inserted.");
     }
 
     @ShellMethod(value = "Add comment to book", key = {"c", "comment"})
     public void addComment(
             @ShellOption String comment,
             @ShellOption Long bookId) {
-        try {
-            Book book = bookRepository.findById(bookId);
-            Comment commentObj = new Comment(comment, book);
-            commentRepository.insert(commentObj);
-            outputService.println("Comment for book: " + book.getName() + " inserted.");
-        } catch (NotFoundException | DataInsertException e) {
-            outputService.println(e.getMessage());
-        }
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new NotFoundException("Book with id " + bookId + " not found."));
+        Comment commentObj = new Comment(comment, book);
+        commentRepository.save(commentObj);
+        outputService.println("Comment for book: " + book.getName() + " inserted.");
     }
 
     @ShellMethod(value = "Get comments for book", key = {"lc", "list-comments"})
     public void listComments(@ShellOption Long bookId) {
         try {
-            Book book = bookRepository.findById(bookId);
+            Book book = bookRepository.findById(bookId)
+                    .orElseThrow(() -> new NotFoundException("Book with id " + bookId + " not found."));;
             List<Comment> comments = commentRepository.findByBook(book);
             outputService.println("Comments for book:");
             outputService.printBooks(Collections.singletonList(book));

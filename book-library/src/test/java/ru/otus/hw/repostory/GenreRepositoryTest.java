@@ -5,12 +5,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.domain.Author;
-import ru.otus.hw.domain.ConsoleContext;
+import ru.otus.hw.domain.Genre;
 import ru.otus.hw.exception.NotFoundException;
 import ru.otus.hw.service.OutputService;
 
@@ -22,11 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@Import({AuthorRepositoryJpa.class, ConsoleContext.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-public class AuthorRepositoryJpaTest {
+public class GenreRepositoryTest {
     @Autowired
-    private AuthorRepository authorRepository;
+    private GenreRepository genreRepository;
     @MockBean
     OutputService outputService;
     @MockBean
@@ -36,34 +33,32 @@ public class AuthorRepositoryJpaTest {
 
     @Test
     public void count() {
-        long result = authorRepository.count();
+        long result = genreRepository.count();
         assertThat(result).isGreaterThan(0);
     }
 
     @Test
     public void findAll() {
-        List<Author> authors = authorRepository.findAll();
-        assertThat(new Long(authors.size())).isEqualTo(authorRepository.count());
+        List<Genre> genres = genreRepository.findAll();
+        assertThat(new Long(genres.size())).isEqualTo(genreRepository.count());
     }
 
     @Test
     public void findById() {
-        Author author = authorRepository.findById(1L);
-        assertThat(author.getId()).isEqualTo(1L);
+        Genre genre = genreRepository.findById(1L).orElse(null);
+        assertThat(genre.getId()).isEqualTo(1L);
     }
 
     @Test(expected = NotFoundException.class)
     public void findByIdError() {
-        Author author = authorRepository.findById(0L);
-        assertThat(author).isNull();
+        Genre genre = genreRepository.findById(0L).orElseThrow(() -> new NotFoundException(""));
     }
-
 
     @Test
     public void insert() {
-        Author author = new Author("first_name", "last_name");
-        long beforeCount = authorRepository.count();
-        authorRepository.insert(author);
-        assertThat(authorRepository.count()).isEqualTo(beforeCount + 1);
+        Genre genre = new Genre("genre_name");
+        long beforeCount = genreRepository.count();
+        genreRepository.save(genre);
+        assertThat(genreRepository.count()).isEqualTo(beforeCount + 1);
     }
 }
