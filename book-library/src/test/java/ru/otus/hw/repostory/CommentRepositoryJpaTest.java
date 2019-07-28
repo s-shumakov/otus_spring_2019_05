@@ -1,6 +1,5 @@
 package ru.otus.hw.repostory;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.domain.Book;
 import ru.otus.hw.domain.Comment;
 import ru.otus.hw.exception.NotFoundException;
-import ru.otus.hw.service.OutputService;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -30,8 +28,6 @@ public class CommentRepositoryJpaTest {
     private CommentRepository commentRepository;
     @Autowired
     private BookRepository bookRepository;
-    @MockBean
-    OutputService outputService;
     @MockBean
     InputStream inputStream;
     @MockBean

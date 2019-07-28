@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.domain.Genre;
 import ru.otus.hw.exception.NotFoundException;
-import ru.otus.hw.service.OutputService;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -26,8 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GenreRepositoryJpaTest {
     @Autowired
     private GenreRepository genreRepository;
-    @MockBean
-    OutputService outputService;
     @MockBean
     InputStream inputStream;
     @MockBean

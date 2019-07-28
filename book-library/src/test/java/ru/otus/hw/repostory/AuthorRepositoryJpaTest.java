@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.domain.Author;
 import ru.otus.hw.domain.ConsoleContext;
 import ru.otus.hw.exception.NotFoundException;
-import ru.otus.hw.service.OutputService;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -27,8 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AuthorRepositoryJpaTest {
     @Autowired
     private AuthorRepository authorRepository;
-    @MockBean
-    OutputService outputService;
     @MockBean
     InputStream inputStream;
     @MockBean

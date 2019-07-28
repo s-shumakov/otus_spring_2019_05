@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.hw.domain.Book;
 import ru.otus.hw.exception.NotFoundException;
-import ru.otus.hw.service.OutputService;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -23,8 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BookRepositoryJpaTest {
     @Autowired
     private BookRepository bookRepository;
-    @MockBean
-    OutputService outputService;
     @MockBean
     InputStream inputStream;
     @MockBean
