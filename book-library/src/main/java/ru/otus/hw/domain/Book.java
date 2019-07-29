@@ -1,9 +1,20 @@
 package ru.otus.hw.domain;
 
+import javax.persistence.*;
+
+@Entity(name = "Books")
 public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
+    @Column(name = "NAME")
     private String name;
+    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "AUTHOR_ID")
     private Author author;
+    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "GENRE_ID")
     private Genre genre;
 
     public Book() {

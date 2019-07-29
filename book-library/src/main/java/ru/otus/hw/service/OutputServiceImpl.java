@@ -1,10 +1,7 @@
 package ru.otus.hw.service;
 
 import org.springframework.stereotype.Service;
-import ru.otus.hw.domain.Author;
-import ru.otus.hw.domain.Book;
-import ru.otus.hw.domain.ConsoleContext;
-import ru.otus.hw.domain.Genre;
+import ru.otus.hw.domain.*;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -37,6 +34,13 @@ public class OutputServiceImpl implements OutputService {
             printStream.println(row.getId() + "\t\"" + row.getName() + "\""
                     + (row.getAuthor() != null ? " - " + row.getAuthor().getFirstName() + " " + row.getAuthor().getLastName() : "")
                     + (row.getGenre() != null ? ", " + row.getGenre().getGenreName() : ""));
+        });
+    }
+
+    @Override
+    public void printComments(List<Comment> comments) {
+        comments.forEach(row -> {
+            printStream.println(row.getComment());
         });
     }
 

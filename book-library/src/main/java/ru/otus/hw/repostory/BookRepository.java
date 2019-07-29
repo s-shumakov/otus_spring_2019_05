@@ -1,11 +1,11 @@
-package ru.otus.hw.dao;
+package ru.otus.hw.repostory;
 
 import ru.otus.hw.domain.Book;
 
 import java.util.List;
 
-public interface BookDao {
-    Integer count();
+public interface BookRepository {
+    Long count();
 
     List<Book> findAll();
 
