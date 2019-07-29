@@ -6,11 +6,15 @@ import javax.persistence.*;
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
+    @Column(name = "NAME")
     private String name;
-    @ManyToOne
+    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "AUTHOR_ID")
     private Author author;
-    @ManyToOne
+    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "GENRE_ID")
     private Genre genre;
 
     public Book() {

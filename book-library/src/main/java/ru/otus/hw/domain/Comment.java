@@ -6,9 +6,12 @@ import javax.persistence.*;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
+    @Column(name = "COMMENT")
     private String comment;
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "BOOK_ID")
     private Book book;
 
     public Comment() {
