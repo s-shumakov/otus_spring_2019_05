@@ -4,15 +4,11 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.hw.domain.Comment;
-import ru.otus.hw.repostory.AuthorRepository;
-import ru.otus.hw.repostory.BookRepository;
-import ru.otus.hw.repostory.GenreRepository;
 import ru.otus.hw.domain.Author;
 import ru.otus.hw.domain.Book;
 import ru.otus.hw.domain.Genre;
-import ru.otus.hw.exception.DataInsertException;
 import ru.otus.hw.exception.NotFoundException;
-import ru.otus.hw.service.CommentService;
+import ru.otus.hw.service.LibraryFacadeService;
 import ru.otus.hw.service.OutputService;
 
 import java.util.Collections;
@@ -20,22 +16,13 @@ import java.util.List;
 
 @ShellComponent
 public class LibraryCommands {
-    private final AuthorRepository authorRepository;
-    private final GenreRepository genreRepository;
-    private final BookRepository bookRepository;
-    private final CommentService commentService;
+    private final LibraryFacadeService libraryFacadeService;
     private final OutputService outputService;
 
     public LibraryCommands(
-            AuthorRepository authorRepository,
-            GenreRepository genreRepository,
-            BookRepository bookRepository,
-            CommentService commentService,
+            LibraryFacadeService libraryFacadeService,
             OutputService outputService) {
-        this.authorRepository = authorRepository;
-        this.genreRepository = genreRepository;
-        this.bookRepository = bookRepository;
-        this.commentService = commentService;
+        this.libraryFacadeService = libraryFacadeService;
         this.outputService = outputService;
     }
 
@@ -43,13 +30,13 @@ public class LibraryCommands {
     public void list(@ShellOption String table) {
         switch (table.toLowerCase()) {
             case "authors":
-                outputService.printAuthors(authorRepository.findAll());
+                outputService.printAuthors(libraryFacadeService.findAllAuthors());
                 break;
             case "genres":
-                outputService.printGenres(genreRepository.findAll());
+                outputService.printGenres(libraryFacadeService.findAllGenres());
                 break;
             case "books":
-                outputService.printBooks(bookRepository.findAll());
+                outputService.printBooks(libraryFacadeService.findAllBooks());
                 break;
             default:
                 outputService.println("Value '" + table + "' not available, use 'authors', 'genres', 'books'");
@@ -64,15 +51,15 @@ public class LibraryCommands {
         try {
             switch (table.toLowerCase()) {
                 case "authors":
-                    Author author = authorRepository.findById(id);
+                    Author author = libraryFacadeService.findAuthorById(id);
                     outputService.printAuthors(Collections.singletonList(author));
                     break;
                 case "genres":
-                    Genre genre = genreRepository.findById(id);
+                    Genre genre = libraryFacadeService.findGenreById(id);
                     outputService.printGenres(Collections.singletonList(genre));
                     break;
                 case "books":
-                    Book book = bookRepository.findById(id);
+                    Book book = libraryFacadeService.findBookById(id);
                     outputService.printBooks(Collections.singletonList(book));
                     break;
                 default:
@@ -88,25 +75,17 @@ public class LibraryCommands {
     public void insertAuthor(
             @ShellOption String firstName,
             @ShellOption String lastName) {
-        try {
-            Author author = new Author(firstName, lastName);
-            authorRepository.insert(author);
-            outputService.println("Author with firstName: " + author.getFirstName() + ", lastName: " + author.getLastName() + " inserted.");
-        } catch (DataInsertException e) {
-            outputService.println(e.getMessage());
-        }
+        Author author = new Author(firstName, lastName);
+        libraryFacadeService.saveAuthor(author);
+        outputService.println("Author with firstName: " + author.getFirstName() + ", lastName: " + author.getLastName() + " inserted.");
     }
 
     @ShellMethod(value = "Insert genre", key = {"ig", "insert-genre"})
     public void insertGenre(
             @ShellOption String genreName) {
-        try {
-            Genre genre = new Genre(genreName);
-            genreRepository.insert(genre);
-            outputService.println("Genre with genreName: " + genre.getGenreName() + " inserted.");
-        } catch (DataInsertException e) {
-            outputService.println(e.getMessage());
-        }
+        Genre genre = new Genre(genreName);
+        libraryFacadeService.saveGenre(genre);
+        outputService.println("Genre with genreName: " + genre.getGenreName() + " inserted.");
     }
 
     @ShellMethod(value = "Insert book", key = {"ib", "insert-book"})
@@ -114,36 +93,28 @@ public class LibraryCommands {
             @ShellOption String name,
             @ShellOption Long authorId,
             @ShellOption Long genreId) {
-        try {
-            Author author = authorRepository.findById(authorId);
-            Genre genre = genreRepository.findById(genreId);
-            Book book = new Book(name, author, genre);
-            bookRepository.insert(book);
-            outputService.println("Book with name: " + book.getName() + " inserted.");
-        } catch (DataInsertException e) {
-            outputService.println(e.getMessage());
-        }
+        Author author = libraryFacadeService.findAuthorById(authorId);
+        Genre genre = libraryFacadeService.findGenreById(genreId);
+        Book book = new Book(name, author, genre);
+        libraryFacadeService.saveBook(book);
+        outputService.println("Book with name: " + book.getName() + " inserted.");
     }
 
     @ShellMethod(value = "Add comment to book", key = {"c", "comment"})
     public void addComment(
             @ShellOption String comment,
             @ShellOption Long bookId) {
-        try {
-            Book book = bookRepository.findById(bookId);
-            Comment commentObj = new Comment(comment, book);
-            commentService.addComment(commentObj);
-            outputService.println("Comment for book: " + book.getName() + " inserted.");
-        } catch (NotFoundException | DataInsertException e) {
-            outputService.println(e.getMessage());
-        }
+        Book book = libraryFacadeService.findBookById(bookId);
+        Comment commentObj = new Comment(comment, book);
+        libraryFacadeService.saveComment(commentObj);
+        outputService.println("Comment for book: " + book.getName() + " inserted.");
     }
 
     @ShellMethod(value = "Get comments for book", key = {"lc", "list-comments"})
     public void listComments(@ShellOption Long bookId) {
         try {
-            Book book = bookRepository.findById(bookId);
-            List<Comment> comments = commentService.getBookComments(book);
+            Book book = libraryFacadeService.findBookById(bookId);
+            List<Comment> comments = libraryFacadeService.findCommentsByBook(book);
             outputService.println("Comments for book:");
             outputService.printBooks(Collections.singletonList(book));
             outputService.printComments(comments);

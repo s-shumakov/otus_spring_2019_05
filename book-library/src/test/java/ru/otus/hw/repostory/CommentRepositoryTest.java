@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@Import({CommentRepositoryJpa.class, BookRepositoryJpa.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
-public class CommentRepositoryJpaTest {
+public class CommentRepositoryTest {
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
@@ -28,8 +26,8 @@ public class CommentRepositoryJpaTest {
 
     @Test
     public void count() {
-        Book book = bookRepository.findById(1L);
-        commentRepository.insert(new Comment("Test comment", book));
+        Book book = bookRepository.findById(1L).orElse(null);
+        commentRepository.save(new Comment("Test comment", book));
         long result = commentRepository.count();
         assertThat(result).isGreaterThan(0);
     }
@@ -42,22 +40,22 @@ public class CommentRepositoryJpaTest {
 
     @Test
     public void findById() {
-        Book book = bookRepository.findById(1L);
-        commentRepository.insert(new Comment("Test comment", book));
-        Comment comment = commentRepository.findById(1L);
+        Book book = bookRepository.findById(1L).orElse(null);
+        commentRepository.save(new Comment("Test comment", book));
+        Comment comment = commentRepository.findById(1L).orElse(null);
         assertThat(comment.getId()).isEqualTo(1L);
     }
 
     @Test(expected = NotFoundException.class)
     public void findByIdError() {
-        Comment comment = commentRepository.findById(0L);
+        Comment comment = commentRepository.findById(0L).orElseThrow(() -> new NotFoundException(""));
     }
 
     @Test
     public void insertAndFind() {
-        Book book = bookRepository.findById(1L);
+        Book book = bookRepository.findById(2L).orElse(null);
         Comment comment = new Comment("Test comment", book);
-        commentRepository.insert(comment);
+        commentRepository.save(comment);
         assertThat(commentRepository.findByBook(book).get(0).getComment()).isEqualTo("Test comment");
     }
 
