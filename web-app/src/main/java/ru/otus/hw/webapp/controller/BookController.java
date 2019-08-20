@@ -28,46 +28,46 @@ public class BookController {
     public String listBooks(Model model) {
         List<Book> books = bookRepository.findAll();
         model.addAttribute("books", books);
-        return "list";
+        return "list-book";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/book/add")
     public String showAddForm(Model model) {
         Book book = new Book();
         model.addAttribute("book", book);
         model.addAttribute("authors", authorRepository.findAll());
         model.addAttribute("genres", genreRepository.findAll());
-        return "add";
+        return "add-book";
     }
 
-    @PostMapping("/add")
+    @PostMapping("/book/add")
     public String addBook(@ModelAttribute("book") Book book, BindingResult result, ModelMap model) {
         if (result.hasErrors()) {
-            return "add";
+            return "add-book";
         }
         bookRepository.save(book);
         return "redirect:/";
     }
 
-    @GetMapping("/edit")
+    @GetMapping("/book/edit")
     public String showUpdateForm(@RequestParam("id") long id, Model model) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Book with Id: " + id + " not found"));
         model.addAttribute("book", book);
         model.addAttribute("authors", authorRepository.findAll());
         model.addAttribute("genres", genreRepository.findAll());
-        return "edit";
+        return "edit-book";
     }
 
-    @PostMapping("/edit")
+    @PostMapping("/book/edit")
     public String updateBook(@ModelAttribute("book") Book book, BindingResult result, ModelMap model) {
         if (result.hasErrors()) {
-            return "edit";
+            return "edit-book";
         }
         bookRepository.save(book);
         return "redirect:/";
     }
 
-    @GetMapping("/delete")
+    @DeleteMapping("/book/delete")
     public String deleteBook(@RequestParam("id") long id, Model model) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid book Id:" + id));
         bookRepository.delete(book);
