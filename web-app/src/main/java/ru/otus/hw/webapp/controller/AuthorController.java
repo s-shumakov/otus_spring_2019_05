@@ -1,11 +1,13 @@
 package ru.otus.hw.webapp.controller;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.webapp.domain.Author;
+import ru.otus.hw.webapp.exception.CustomException;
 import ru.otus.hw.webapp.repostory.AuthorRepository;
 
 import java.util.List;
@@ -62,6 +64,11 @@ public class AuthorController {
     public String deleteAuthor(@RequestParam("id") long id, Model model) {
         Author author = authorRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid author Id:" + id));
         authorRepository.delete(author);
+        try {
+            authorRepository.delete(author);
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException("Could not delete author with id " + id);
+        }
         return "redirect:/author";
     }
 }

@@ -1,11 +1,13 @@
 package ru.otus.hw.webapp.controller;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.webapp.domain.Genre;
+import ru.otus.hw.webapp.exception.CustomException;
 import ru.otus.hw.webapp.repostory.GenreRepository;
 
 import java.util.List;
@@ -61,7 +63,11 @@ public class GenreController {
     @DeleteMapping("/delete")
     public String deleteGenre(@RequestParam("id") long id, Model model) {
         Genre genre = genreRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid genre Id:" + id));
-        genreRepository.delete(genre);
+        try {
+            genreRepository.delete(genre);
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException("Could not delete genre with id " + id);
+        }
         return "redirect:/genre";
     }
 }

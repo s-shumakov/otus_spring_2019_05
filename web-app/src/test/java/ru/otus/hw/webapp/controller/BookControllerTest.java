@@ -27,8 +27,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
@@ -58,6 +57,7 @@ public class BookControllerTest {
     public void listBooks() throws Exception {
         when(bookRepository.findAll()).thenReturn(books);
         this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
+                .andExpect(view().name("list-book"))
                 .andExpect(content().string(containsString("Books")))
                 .andExpect(content().string(containsString("Book 1")));
     }
@@ -65,6 +65,7 @@ public class BookControllerTest {
     @Test
     public void showAddForm() throws Exception {
         this.mockMvc.perform(get("/book/add")).andDo(print()).andExpect(status().isOk())
+                .andExpect(view().name("add-book"))
                 .andExpect(content().string(containsString("Add book")));
     }
 
@@ -80,9 +81,11 @@ public class BookControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         this.mockMvc.perform(post("/book/add").content(objectMapper.writeValueAsString(book3)))
-                .andDo(print()).andExpect(status().is3xxRedirection());
+                .andDo(print()).andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/"));
         this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(containsString("Book 3")));
+                .andExpect(content().string(containsString("Book 3")))
+                .andExpect(view().name("list-book"));
     }
 
     @Test
@@ -92,6 +95,7 @@ public class BookControllerTest {
         when(bookRepository.findById(book.getId())).thenReturn(java.util.Optional.of(book));
         this.mockMvc.perform(get("/book/edit").param("id", "1"))
                 .andDo(print()).andExpect(status().isOk())
+                .andExpect(view().name("edit-book"))
                 .andExpect(content().string(containsString("Book info")));
     }
 
@@ -105,9 +109,11 @@ public class BookControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         this.mockMvc.perform(post("/book/edit").content(objectMapper.writeValueAsString(book)))
-                .andDo(print()).andExpect(status().is3xxRedirection());
+                .andDo(print()).andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/"));
         this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(containsString("New name")));
+                .andExpect(content().string(containsString("New name")))
+                .andExpect(view().name("list-book"));
     }
 
     @Test
@@ -121,8 +127,10 @@ public class BookControllerTest {
         when(bookRepository.findAll()).thenReturn(bookList);
 
         this.mockMvc.perform(delete("/book/delete").param("id", "1"))
-                .andDo(print()).andExpect(status().is3xxRedirection());
+                .andDo(print()).andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/"));
         this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(not(containsString("Book 1"))));
+                .andExpect(content().string(not(containsString("Book 1"))))
+                .andExpect(view().name("list-book"));
     }
 }
