@@ -12,6 +12,7 @@
             padding: 5px;
         }
     </style>
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 <h1>Books:</h1>
@@ -28,19 +29,39 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="book : ${books}">
-        <td th:text="${book.id}">1</td>
-        <td th:text="${book.name}">Book name</td>
-        <td th:text="${book.author.firstName + ' ' + book.author.lastName}">John Doe</td>
-        <td th:text="${book.genre.name}">Book genre</td>
-        <td>
-            <a th:href="@{/book/edit(id=${book.id})}" href="/book/edit">Edit</a>
-            <form style="float: right; padding-left: 10px" action="#" th:action="@{/book/delete(id=${book.id})}" th:method="delete">
-                <button style="display: inline;" type="submit" id="submitButton">Delete</button>
-            </form>
-        </td>
-    </tr>
     </tbody>
 </table>
+<script>
+    $(function () {
+        $.get('/api/book').done(function (books) {
+            books.forEach(function (book) {
+                $('tbody').append(`
+                    <tr>
+                        <td>${book.id}</td>
+                        <td>${book.name}</td>
+                        <td>${book.author.firstName + ' ' + book.author.lastName}</td>
+                        <td>${book.genre.name}</td>
+                        <td>
+                            <a href="/book/edit?id=${book.id}"">Edit</a>
+                            <button style="display: inline;" onclick="delete_book(${book.id});">Delete</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        });
+    });
+    function delete_book(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: "/api/book/delete?id=" + id,
+            success: function() {
+                window.location = "/";
+            },
+            error: function(request, status, error) {
+                alert(request.responseJSON.message);
+            }
+        });
+    }
+</script>
 </body>
 </html>
