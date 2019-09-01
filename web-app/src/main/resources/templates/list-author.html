@@ -16,8 +16,8 @@
 </head>
 <body>
 <h1>Authors:</h1>
-<div><a href="/">Books</a>&nbsp;&nbsp;<a href="/genre">Genres</a></div>
-<a href="/author/add">New author</a>
+<div><a href="/books">Books</a>&nbsp;&nbsp;<a href="/genres">Genres</a></div>
+<a href="/authors/add">New author</a>
 <table>
     <thead>
     <tr>
@@ -32,7 +32,7 @@
 </table>
 <script>
     $(function () {
-        $.get('/api/author').done(function (authors) {
+        $.get('/api/authors').done(function (authors) {
             authors.forEach(function (author) {
                 $('tbody').append(`
                     <tr>
@@ -40,7 +40,7 @@
                         <td>${author.firstName}</td>
                         <td>${author.lastName}</td>
                         <td>
-                            <a href="/author/edit?id=${author.id}">Edit</a>
+                            <a href="/authors/edit?id=${author.id}">Edit</a>
                             <button style="display: inline;" onclick="delete_author(${author.id});">Delete</button>
                         </td>
                     </tr>
@@ -51,9 +51,9 @@
     function delete_author(id) {
         $.ajax({
             type: 'DELETE',
-            url: "/api/author/delete?id=" + id,
+            url: "/api/authors/" + id,
             success: function() {
-                window.location = "/author";
+                window.location = "/authors";
             },
             error: function(request, status, error) {
                 alert(request.responseJSON.message);

@@ -22,7 +22,7 @@
 </head>
 <body>
 
-<form id="edit-form" th:action="@{/api/author/add}" th:method="post" action="edit-author.html">
+<form id="edit-form" th:action="@{/api/authors}" th:method="post" action="edit-author.html">
     <h1>Add author:</h1>
 
     <div class="row">
@@ -48,7 +48,7 @@
                 data: JSON.stringify({firstName: $('#firstName-input').val(), lastName: $('#lastName-input').val()}),
                 contentType: "application/json",
                 success: function(json) {
-                    window.location = "/author";
+                    window.location = "/authors";
                 }
             });
             return false;

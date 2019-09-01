@@ -29,19 +29,19 @@ public class BookPagesControllerTest {
 
     @Test
     public void listBooks() throws Exception {
-        this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
+        this.mockMvc.perform(get("/books")).andDo(print()).andExpect(status().isOk())
                 .andExpect(view().name("list-book"));
     }
 
     @Test
     public void showAddForm() throws Exception {
-        this.mockMvc.perform(get("/book/add")).andDo(print()).andExpect(status().isOk())
+        this.mockMvc.perform(get("/books/add")).andDo(print()).andExpect(status().isOk())
                 .andExpect(view().name("add-book"));
     }
 
     @Test
     public void showUpdateForm() throws Exception {
-        this.mockMvc.perform(get("/book/edit")).andDo(print()).andExpect(status().isOk())
+        this.mockMvc.perform(get("/books/edit")).andDo(print()).andExpect(status().isOk())
                 .andExpect(view().name("edit-book"));
     }
 }

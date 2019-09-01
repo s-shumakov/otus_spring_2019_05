@@ -16,8 +16,8 @@
 </head>
 <body>
 <h1>Books:</h1>
-<div><a href="/author">Authors</a>&nbsp;&nbsp;<a href="/genre">Genres</a></div>
-<a href="/book/add">New book</a>
+<div><a href="/authors">Authors</a>&nbsp;&nbsp;<a href="/genres">Genres</a></div>
+<a href="/books/add">New book</a>
 <table>
     <thead>
     <tr>
@@ -33,7 +33,7 @@
 </table>
 <script>
     $(function () {
-        $.get('/api/book').done(function (books) {
+        $.get('/api/books').done(function (books) {
             books.forEach(function (book) {
                 $('tbody').append(`
                     <tr>
@@ -42,7 +42,7 @@
                         <td>${book.author.firstName + ' ' + book.author.lastName}</td>
                         <td>${book.genre.name}</td>
                         <td>
-                            <a href="/book/edit?id=${book.id}"">Edit</a>
+                            <a href="/books/edit?id=${book.id}"">Edit</a>
                             <button style="display: inline;" onclick="delete_book(${book.id});">Delete</button>
                         </td>
                     </tr>
@@ -53,9 +53,9 @@
     function delete_book(id) {
         $.ajax({
             type: 'DELETE',
-            url: "/api/book/delete?id=" + id,
+            url: "/api/books/" + id,
             success: function() {
-                window.location = "/";
+                window.location = "/books";
             },
             error: function(request, status, error) {
                 alert(request.responseJSON.message);

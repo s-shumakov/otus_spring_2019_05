@@ -57,7 +57,7 @@ public class BookControllerTest {
     @Test
     public void listBooks() throws Exception {
         when(bookRepository.findAll()).thenReturn(books);
-        this.mockMvc.perform(get("/api/book")).andDo(print()).andExpect(status().isOk())
+        this.mockMvc.perform(get("/api/books")).andDo(print()).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Book 1")))
                 .andExpect(content().string(containsString("Book 2")));
     }
@@ -70,7 +70,7 @@ public class BookControllerTest {
         when(bookRepository.save(book3)).thenReturn(book3);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        this.mockMvc.perform(post("/api/book/add").content(objectMapper.writeValueAsString(book3))
+        this.mockMvc.perform(post("/api/books").content(objectMapper.writeValueAsString(book3))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
@@ -85,7 +85,7 @@ public class BookControllerTest {
         when(bookRepository.save(book)).thenReturn(book);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        this.mockMvc.perform(put("/api/book/edit").content(objectMapper.writeValueAsString(book))
+        this.mockMvc.perform(put("/api/books/1").content(objectMapper.writeValueAsString(book))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
@@ -102,9 +102,9 @@ public class BookControllerTest {
         bookList.remove(0);
         when(bookRepository.findAll()).thenReturn(bookList);
 
-        this.mockMvc.perform(delete("/api/book/delete").param("id", "1"))
+        this.mockMvc.perform(delete("/api/books/1"))
                 .andDo(print()).andExpect(status().isOk());
-        this.mockMvc.perform(get("/api/book"))
+        this.mockMvc.perform(get("/api/books"))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value(IsNot.not("Book 1")));
     }
@@ -112,7 +112,7 @@ public class BookControllerTest {
     @Test
     public void getBook() throws Exception {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));
-        this.mockMvc.perform(get("/api/book/edit?id=1")).andDo(print()).andExpect(status().isOk())
+        this.mockMvc.perform(get("/api/books/1")).andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Book 1"));
     }
 }
