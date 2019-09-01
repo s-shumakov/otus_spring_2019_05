@@ -8,7 +8,6 @@ import ru.otus.hw.webapp.repostory.GenreRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/genres")
 public class GenreController {
     private final GenreRepository genreRepository;
 
@@ -16,27 +15,27 @@ public class GenreController {
         this.genreRepository = genreRepository;
     }
 
-    @GetMapping
+    @GetMapping("/api/genres")
     public List<Genre> listGenres() {
         return genreRepository.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/genres/{id}")
     public Genre getGenre(@PathVariable Long id) {
         return genreRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Genre with Id: " + id + " not found"));
     }
 
-    @PostMapping
+    @PostMapping("/api/genres")
     public Genre addGenre(@RequestBody Genre genre) {
         return genreRepository.save(genre);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/genres/{id}")
     public Genre updateGenre(@RequestBody Genre genre) {
         return genreRepository.save(genre);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/genres/{id}")
     public void deleteGenre(@PathVariable Long id) {
         try {
             genreRepository.deleteById(id);

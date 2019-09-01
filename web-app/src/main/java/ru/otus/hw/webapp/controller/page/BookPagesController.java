@@ -4,19 +4,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/books")
 public class BookPagesController {
-    @GetMapping
+    @GetMapping("/books")
     public String listBooks() {
         return "list-book";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/books/add")
     public String showAddForm() {
         return "add-book";
     }
 
-    @GetMapping("/edit")
+    @GetMapping("/books/edit")
     public String showUpdateForm() {
         return "edit-book";
     }

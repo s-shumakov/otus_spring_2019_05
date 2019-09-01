@@ -4,19 +4,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/authors")
 public class AuthorPagesController {
-    @GetMapping
+    @GetMapping("/authors")
     public String listAuthors() {
         return "list-author";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/authors/add")
     public String showAddForm() {
         return "add-author";
     }
 
-    @GetMapping("/edit")
+    @GetMapping("/authors/edit")
     public String showUpdateForm() {
         return "edit-author";
     }

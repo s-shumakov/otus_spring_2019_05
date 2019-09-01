@@ -8,7 +8,6 @@ import ru.otus.hw.webapp.repostory.BookRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/books")
 public class BookController {
     private final BookRepository bookRepository;
 
@@ -16,27 +15,27 @@ public class BookController {
         this.bookRepository = bookRepository;
     }
 
-    @GetMapping
+    @GetMapping("/api/books")
     public List<Book> listBooks() {
         return bookRepository.findAll();
     }
 
-    @PostMapping
+    @PostMapping("/api/books")
     public Book addBook(@RequestBody Book book) {
         return bookRepository.save(book);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/books/{id}")
     public Book getBook(@PathVariable Long id) {
         return bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Book with Id: " + id + " not found"));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/books/{id}")
     public Book updateBook(@RequestBody Book book) {
         return bookRepository.save(book);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/books/{id}")
     public void deleteBook(@PathVariable Long id) {
         try {
             bookRepository.deleteById(id);

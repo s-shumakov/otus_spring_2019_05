@@ -8,7 +8,6 @@ import ru.otus.hw.webapp.repostory.AuthorRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/authors")
 public class AuthorController {
     private final AuthorRepository authorRepository;
 
@@ -16,7 +15,7 @@ public class AuthorController {
         this.authorRepository = authorRepository;
     }
 
-    @GetMapping
+    @GetMapping("/api/authors")
     public List<Author> listAuthors() {
         return authorRepository.findAll();
     }
@@ -26,17 +25,17 @@ public class AuthorController {
         return authorRepository.save(author);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/authors/{id}")
     public Author getAuthor(@PathVariable Long id) {
         return authorRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Genre with Id: " + id + " not found"));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/authors/{id}")
     public Author updateAuthor(@RequestBody Author author) {
         return authorRepository.save(author);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/authors/{id}")
     public void deleteAuthor(@PathVariable Long id) {
         try {
             authorRepository.deleteById(id);

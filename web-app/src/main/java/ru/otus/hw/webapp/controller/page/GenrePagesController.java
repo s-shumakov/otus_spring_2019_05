@@ -4,19 +4,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/genres")
 public class GenrePagesController {
-    @GetMapping
+    @GetMapping("/genres")
     public String listGenres() {
         return "list-genre";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/genres/add")
     public String showAddForm() {
         return "add-genre";
     }
 
-    @GetMapping("/edit")
+    @GetMapping("/genres/edit")
     public String showUpdateForm() {
         return "edit-genre";
     }
