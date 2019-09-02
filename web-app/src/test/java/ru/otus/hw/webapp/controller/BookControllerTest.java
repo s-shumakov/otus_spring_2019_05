@@ -1,12 +1,14 @@
 package ru.otus.hw.webapp.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.core.IsNot;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.webapp.domain.Author;
@@ -19,10 +21,9 @@ import ru.otus.hw.webapp.repostory.GenreRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -56,17 +57,9 @@ public class BookControllerTest {
     @Test
     public void listBooks() throws Exception {
         when(bookRepository.findAll()).thenReturn(books);
-        this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
-                .andExpect(view().name("list-book"))
-                .andExpect(content().string(containsString("Books")))
-                .andExpect(content().string(containsString("Book 1")));
-    }
-
-    @Test
-    public void showAddForm() throws Exception {
-        this.mockMvc.perform(get("/book/add")).andDo(print()).andExpect(status().isOk())
-                .andExpect(view().name("add-book"))
-                .andExpect(content().string(containsString("Add book")));
+        this.mockMvc.perform(get("/api/books")).andDo(print()).andExpect(status().isOk())
+                .andExpect(content().string(containsString("Book 1")))
+                .andExpect(content().string(containsString("Book 2")));
     }
 
     @Test
@@ -74,29 +67,14 @@ public class BookControllerTest {
         Book book3 = new Book(3L, "Book 3",
                 new Author(3L, "FirstName 3", "LastName 3"),
                 new Genre(3L, "Genre 3"));
-        List<Book> bookList = new ArrayList<>(books);
-        bookList.add(book3);
         when(bookRepository.save(book3)).thenReturn(book3);
-        when(bookRepository.findAll()).thenReturn(bookList);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        this.mockMvc.perform(post("/book/add").content(objectMapper.writeValueAsString(book3)))
-                .andDo(print()).andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
-        this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(containsString("Book 3")))
-                .andExpect(view().name("list-book"));
-    }
-
-    @Test
-    public void showUpdateForm() throws Exception {
-        List<Book> bookList = new ArrayList<>(books);
-        Book book = bookList.get(0);
-        when(bookRepository.findById(book.getId())).thenReturn(java.util.Optional.of(book));
-        this.mockMvc.perform(get("/book/edit").param("id", "1"))
+        this.mockMvc.perform(post("/api/books").content(objectMapper.writeValueAsString(book3))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(view().name("edit-book"))
-                .andExpect(content().string(containsString("Book info")));
+                .andExpect(jsonPath("$.name").value("Book 3"));
     }
 
     @Test
@@ -105,15 +83,13 @@ public class BookControllerTest {
         Book book = bookList.get(0);
         book.setName("New name");
         when(bookRepository.save(book)).thenReturn(book);
-        when(bookRepository.findAll()).thenReturn(bookList);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        this.mockMvc.perform(post("/book/edit").content(objectMapper.writeValueAsString(book)))
-                .andDo(print()).andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
-        this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(containsString("New name")))
-                .andExpect(view().name("list-book"));
+        this.mockMvc.perform(put("/api/books/1").content(objectMapper.writeValueAsString(book))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("New name"));
     }
 
     @Test
@@ -126,11 +102,17 @@ public class BookControllerTest {
         bookList.remove(0);
         when(bookRepository.findAll()).thenReturn(bookList);
 
-        this.mockMvc.perform(delete("/book/delete").param("id", "1"))
-                .andDo(print()).andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
-        this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().isOk())
-                .andExpect(content().string(not(containsString("Book 1"))))
-                .andExpect(view().name("list-book"));
+        this.mockMvc.perform(delete("/api/books/1"))
+                .andDo(print()).andExpect(status().isOk());
+        this.mockMvc.perform(get("/api/books"))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value(IsNot.not("Book 1")));
+    }
+
+    @Test
+    public void getBook() throws Exception {
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));
+        this.mockMvc.perform(get("/api/books/1")).andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Book 1"));
     }
 }

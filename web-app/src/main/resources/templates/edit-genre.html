@@ -18,26 +18,48 @@
             margin-top: 10px;
         }
     </style>
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 
-<form id="edit-form" th:action="@{/genre/edit(id=${genre.id})}" th:method="post" action="edit-genre.html">
+<form id="edit-form" th:action="@{/api/genres/}" th:method="post" action="edit-genre.html">
     <h1>Genre info:</h1>
 
     <div class="row">
         <label for="id-input">Id:</label>
-        <input id="id-input" type="text" readonly="readonly" th:value="${genre.id}" value="1"/>
+        <input id="id-input" name="id" type="text" readonly="readonly" value="1"/>
     </div>
 
     <div class="row">
         <label for="name-input">Name:</label>
-        <input id="name-input" name="name" type="text" th:value="${genre.name}" value="name"/>
+        <input id="name-input" name="name" type="text" value="name"/>
     </div>
 
     <div class="row">
         <button type="submit">Save</button>
     </div>
 </form>
-
+<script>
+    $(function () {
+        let url = new URL(window.location.href);
+        let id = url.searchParams.get("id");
+        $.get('/api/genres/' + id).done(function (genre) {
+            $('#id-input').val(genre.id);
+            $('#name-input').val(genre.name);
+        });
+        $('#edit-form').submit(function() {
+            $.ajax({
+                type: 'PUT',
+                url: $(this).attr('action') + id,
+                data: JSON.stringify({id: $('#id-input').val(), name: $('#name-input').val()}),
+                contentType: "application/json",
+                success: function() {
+                    window.location = "/genres";
+                }
+            });
+            return false;
+        });
+    });
+</script>
 </body>
 </html>

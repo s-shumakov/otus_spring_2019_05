@@ -18,42 +18,75 @@
             margin-top: 10px;
         }
     </style>
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 
-<form id="edit-form" th:action="@{/book/edit(id=${book.id})}" th:method="post" action="book-edit.html">
+<form id="edit-form" th:action="@{/api/books/}" th:method="post" action="book-edit.html">
     <h1>Book info:</h1>
 
     <div class="row">
         <label for="id-input">Id:</label>
-        <input id="id-input" type="text" readonly="readonly" th:value="${book.id}" value="1"/>
+        <input id="id-input" name="id" type="text" readonly="readonly"/>
     </div>
 
     <div class="row">
         <label for="name-input">Name:</label>
-        <input id="name-input" name="name" type="text" th:value="${book.name}" value="Name"/>
+        <input id="name-input" name="name" type="text"/>
     </div>
 
     <div class="row">
         <label for="author-select">Author:</label>
-        <select id="author-select" th:field="${book.author}">
-                <option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.firstName + ' ' + author.lastName}">
-                </option>
-        </select>
+        <select id="author-select" name="author"></select>
     </div>
 
     <div class="row">
         <label for="genre-select">Genre:</label>
-        <select id="genre-select" th:field="${book.genre}">
-            <option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}">
-            </option>
-        </select>
+        <select id="genre-select" name="genre"></select>
     </div>
 
     <div class="row">
         <button type="submit">Save</button>
     </div>
 </form>
-
+<script>
+    $(function () {
+        $.get('/api/genres').done(function (genres) {
+            genres.forEach(function (genre) {
+                $('#genre-select').append($("<option></option>")
+                    .attr("value", genre.id).text(genre.name));
+            });
+        });
+        $.get('/api/authors').done(function (authors) {
+            authors.forEach(function (author) {
+                $('#author-select').append($("<option></option>")
+                    .attr("value", author.id).text(author.firstName + ' ' + author.lastName));
+            });
+        });
+        let url = new URL(window.location.href);
+        let id = url.searchParams.get("id");
+        $.get('/api/books/' + id).done(function (book) {
+            $('#id-input').val(book.id);
+            $('#name-input').val(book.name);
+            $('#author-select').val(book.author.id);
+            $('#genre-select').val(book.genre.id);
+        });
+        $('#edit-form').submit(function() {
+            $.ajax({
+                type: 'PUT',
+                url: $(this).attr('action') + id,
+                data: JSON.stringify({id: $('#id-input').val(), name: $('#name-input').val(),
+                    author: {id: $('#author-select').val()},
+                    genre: {id: $('#genre-select').val()}
+                }),
+                contentType: "application/json",
+                success: function() {
+                    window.location = "/books";
+                }
+            });
+            return false;
+        });
+    });
+</script>
 </body>
 </html>

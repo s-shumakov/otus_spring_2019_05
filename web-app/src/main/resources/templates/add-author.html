@@ -18,26 +18,42 @@
             margin-top: 10px;
         }
     </style>
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 
-<form id="edit-form" th:action="@{/author/edit(id=${author.id})}" th:method="post" action="edit-author.html">
+<form id="edit-form" th:action="@{/api/authors}" th:method="post" action="edit-author.html">
     <h1>Add author:</h1>
 
     <div class="row">
         <label for="firstName-input">First name:</label>
-        <input id="firstName-input" name="firstName" type="text" th:value="${author.firstName}" value="firstName"/>
+        <input id="firstName-input" name="firstName" type="text"/>
     </div>
 
     <div class="row">
         <label for="lastName-input">Last name:</label>
-        <input id="lastName-input" name="lastName" type="text" th:value="${author.lastName}" value="lastName"/>
+        <input id="lastName-input" name="lastName" type="text"/>
     </div>
 
     <div class="row">
-        <button type="submit">Save</button>
+        <button id="add-btn" type="submit">Save</button>
     </div>
 </form>
-
+<script>
+    $(function () {
+        $('#edit-form').submit(function() {
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: JSON.stringify({firstName: $('#firstName-input').val(), lastName: $('#lastName-input').val()}),
+                contentType: "application/json",
+                success: function(json) {
+                    window.location = "/authors";
+                }
+            });
+            return false;
+        });
+    });
+</script>
 </body>
 </html>

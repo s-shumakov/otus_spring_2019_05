@@ -12,32 +12,54 @@
             padding: 5px;
         }
     </style>
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 <h1>Authors:</h1>
-<div><a href="/">Books</a>&nbsp;&nbsp;<a href="/genre">Genres</a></div>
-<a href="/author/add">New author</a>
+<div><a href="/books">Books</a>&nbsp;&nbsp;<a href="/genres">Genres</a></div>
+<a href="/authors/add">New author</a>
 <table>
     <thead>
     <tr>
         <th>Id</th>
         <th>First name</th>
         <th>Last name</th>
+        <th>Action</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="author : ${authors}">
-        <td th:text="${author.id}">1</td>
-        <td th:text="${author.firstName}">First name</td>
-        <td th:text="${author.lastName}">Last name</td>
-        <td>
-            <a th:href="@{/author/edit(id=${author.id})}" href="/author/edit">Edit</a>
-            <form style="float: right; padding-left: 10px" action="#" th:action="@{/author/delete(id=${author.id})}" th:method="delete">
-                <button style="display: inline;" type="submit" id="submitButton">Delete</button>
-            </form>
-        </td>
-    </tr>
     </tbody>
 </table>
+<script>
+    $(function () {
+        $.get('/api/authors').done(function (authors) {
+            authors.forEach(function (author) {
+                $('tbody').append(`
+                    <tr>
+                        <td>${author.id}</td>
+                        <td>${author.firstName}</td>
+                        <td>${author.lastName}</td>
+                        <td>
+                            <a href="/authors/edit?id=${author.id}">Edit</a>
+                            <button style="display: inline;" onclick="delete_author(${author.id});">Delete</button>
+                        </td>
+                    </tr>
+                `)
+            });
+        });
+    });
+    function delete_author(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: "/api/authors/" + id,
+            success: function() {
+                window.location = "/authors";
+            },
+            error: function(request, status, error) {
+                alert(request.responseJSON.message);
+            }
+        });
+    }
+</script>
 </body>
 </html>

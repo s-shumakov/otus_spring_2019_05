@@ -12,30 +12,52 @@
             padding: 5px;
         }
     </style>
+    <script src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 <h1>Genres:</h1>
-<div><a href="/">Books</a>&nbsp;&nbsp;<a href="/author">Authors</a></div>
-<a href="/genre/add">New genre</a>
+<div><a href="/books">Books</a>&nbsp;&nbsp;<a href="/authors">Authors</a></div>
+<a href="/genres/add">New genre</a>
 <table>
     <thead>
     <tr>
         <th>Id</th>
         <th>Name</th>
+        <th>Action</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="genre : ${genres}">
-        <td th:text="${genre.id}">1</td>
-        <td th:text="${genre.name}">Name</td>
-        <td>
-            <a th:href="@{/genre/edit(id=${genre.id})}" href="/genre/edit">Edit</a>
-            <form style="float: right; padding-left: 10px" action="#" th:action="@{/genre/delete(id=${genre.id})}" th:method="delete">
-                <button style="display: inline;" type="submit" id="submitButton">Delete</button>
-            </form>
-        </td>
-    </tr>
     </tbody>
 </table>
+<script>
+    $(function () {
+        $.get('/api/genres').done(function (genres) {
+            genres.forEach(function (genre) {
+                $('tbody').append(`
+                    <tr>
+                        <td>${genre.id}</td>
+                        <td>${genre.name}</td>
+                        <td>
+                            <a href="/genres/edit?id=${genre.id}">Edit</a>
+                            <button style="display: inline;" onclick="delete_genre(${genre.id});">Delete</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        });
+    });
+    function delete_genre(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: "/api/genres/" + id,
+            success: function() {
+                window.location = "/genres";
+            },
+            error: function(request, status, error) {
+                alert(request.responseJSON.message);
+            }
+        });
+    }
+</script>
 </body>
 </html>
