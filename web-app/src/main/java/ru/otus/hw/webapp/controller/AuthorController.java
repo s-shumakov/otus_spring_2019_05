@@ -20,7 +20,7 @@ public class AuthorController {
         return authorRepository.findAll();
     }
 
-    @PostMapping
+    @PostMapping("/api/authors")
     public Author addAuthor(@RequestBody Author author) {
         return authorRepository.save(author);
     }
