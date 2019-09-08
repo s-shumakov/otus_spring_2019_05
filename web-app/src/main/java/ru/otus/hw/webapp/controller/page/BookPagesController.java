@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class BookPagesController {
-    @GetMapping("/books")
+    @GetMapping({"/", "/books"})
     public String listBooks() {
         return "list-book";
     }

@@ -25,3 +25,6 @@ INSERT INTO BOOKS VALUES (2, 'Приключения Незнайки', 8, 3);
 INSERT INTO BOOKS VALUES (3, 'Таинственный остров', 1, 8);
 INSERT INTO BOOKS VALUES (4, 'Война и мир', 3, 10);
 INSERT INTO BOOKS VALUES (5, 'Дракула', 7, 5);
+
+INSERT INTO USERS VALUES (1, 'admin', 'Admin', '12345');
+INSERT INTO USERS VALUES (2, 'user', 'User', '12345');
