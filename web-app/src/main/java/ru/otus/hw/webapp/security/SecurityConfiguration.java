@@ -13,24 +13,11 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements InitializingBean {
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfiguration(AuthenticationManagerBuilder authenticationManagerBuilder, UserDetailsService userDetailsService) {
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
+    public SecurityConfiguration(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        try {
-            authenticationManagerBuilder
-                    .userDetailsService(userDetailsService)
-                    .passwordEncoder(passwordEncoder());
-        } catch (Exception e) {
-            throw new BeanInitializationException("Security configuration failed", e);
-        }
     }
 
     @SuppressWarnings("deprecation")
@@ -52,7 +39,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .authorizeRequests()
                 .antMatchers("/**").authenticated()
                 .and()
-                .formLogin();
+                .formLogin()
+                .and()
+                .userDetailsService(userDetailsService);
     }
 
 }
