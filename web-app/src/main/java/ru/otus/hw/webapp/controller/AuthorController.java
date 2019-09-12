@@ -1,5 +1,6 @@
 package ru.otus.hw.webapp.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.webapp.domain.Author;
 import ru.otus.hw.webapp.exception.CustomException;
@@ -20,6 +21,7 @@ public class AuthorController {
         return authorRepository.findAll();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/api/authors")
     public Author addAuthor(@RequestBody Author author) {
         return authorRepository.save(author);
@@ -30,11 +32,13 @@ public class AuthorController {
         return authorRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Genre with Id: " + id + " not found"));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/api/authors/{id}")
     public Author updateAuthor(@RequestBody Author author) {
         return authorRepository.save(author);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/api/authors/{id}")
     public void deleteAuthor(@PathVariable Long id) {
         try {

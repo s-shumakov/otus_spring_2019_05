@@ -98,6 +98,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
     public void deleteBook() throws Exception {
         List<Book> bookList = new ArrayList<>(books);
         Book book = bookList.get(0);

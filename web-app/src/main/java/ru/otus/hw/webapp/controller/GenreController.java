@@ -1,5 +1,6 @@
 package ru.otus.hw.webapp.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.webapp.domain.Genre;
 import ru.otus.hw.webapp.exception.CustomException;
@@ -25,16 +26,19 @@ public class GenreController {
         return genreRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Genre with Id: " + id + " not found"));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/api/genres")
     public Genre addGenre(@RequestBody Genre genre) {
         return genreRepository.save(genre);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/api/genres/{id}")
     public Genre updateGenre(@RequestBody Genre genre) {
         return genreRepository.save(genre);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/api/genres/{id}")
     public void deleteGenre(@PathVariable Long id) {
         try {
