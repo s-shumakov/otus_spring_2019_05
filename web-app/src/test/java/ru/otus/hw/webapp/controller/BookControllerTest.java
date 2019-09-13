@@ -121,4 +121,16 @@ public class BookControllerTest {
         this.mockMvc.perform(get("/api/books/1")).andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Book 1"));
     }
+
+    @Test
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    public void testAccessAllowed() throws Exception {
+        this.mockMvc.perform(delete("/api/books/1")).andDo(print()).andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"ROLE_USER"})
+    public void testAccessDenied() throws Exception {
+        this.mockMvc.perform(delete("/api/books/1")).andDo(print()).andExpect(status().isForbidden());
+    }
 }
