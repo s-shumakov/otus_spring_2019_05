@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.otus.hw.webapp.repostory.UserRepository;
 
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Service("userDetailsService")
 public class DomainUserDetailsService implements UserDetailsService {
@@ -20,9 +21,12 @@ public class DomainUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         String lowercaseLogin = login.toLowerCase();
-        return userRepository.findByLogin(lowercaseLogin)
+        return userRepository.findOneWithAuthoritiesByLogin(lowercaseLogin)
                 .map(user -> new org.springframework.security.core.userdetails.User(
-                        user.getLogin(), user.getPassword(), Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))))
+                        user.getLogin(), user.getPassword(),
+                        user.getAuthorities().stream()
+                                .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+                                .collect(Collectors.toList())))
                 .orElseThrow(() -> new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database"));
     }
 }

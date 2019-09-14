@@ -1,5 +1,6 @@
 package ru.otus.hw.webapp.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.webapp.domain.Book;
 import ru.otus.hw.webapp.exception.CustomException;
@@ -35,6 +36,7 @@ public class BookController {
         return bookRepository.save(book);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/api/books/{id}")
     public void deleteBook(@PathVariable Long id) {
         try {

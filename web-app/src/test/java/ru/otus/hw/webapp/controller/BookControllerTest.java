@@ -98,6 +98,7 @@ public class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
     public void deleteBook() throws Exception {
         List<Book> bookList = new ArrayList<>(books);
         Book book = bookList.get(0);
@@ -119,5 +120,17 @@ public class BookControllerTest {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));
         this.mockMvc.perform(get("/api/books/1")).andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Book 1"));
+    }
+
+    @Test
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
+    public void testAccessAllowed() throws Exception {
+        this.mockMvc.perform(delete("/api/books/1")).andDo(print()).andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"ROLE_USER"})
+    public void testAccessDenied() throws Exception {
+        this.mockMvc.perform(delete("/api/books/1")).andDo(print()).andExpect(status().isForbidden());
     }
 }
