@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:booklibrary
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+      initialization-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  h2:
+    console:
+      enabled: true
