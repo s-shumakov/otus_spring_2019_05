@@ -17,7 +17,6 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import ru.otus.hw.batch.domain.Author;
 import ru.otus.hw.batch.domain.Book;
 import ru.otus.hw.batch.domain.MongoAuthor;
 import ru.otus.hw.batch.domain.MongoBook;
@@ -43,9 +42,9 @@ public class BatchConfig {
     }
 
     @Bean
-    public JpaPagingItemReader itemReader() {
-        return new JpaPagingItemReaderBuilder<Author>()
-                .name("creditReader")
+    public JpaPagingItemReader<Book> itemReader() {
+        return new JpaPagingItemReaderBuilder<Book>()
+                .name("bookReader")
                 .entityManagerFactory(entityManagerFactory)
                 .queryString("select b from Books b")
                 .pageSize(1000)
@@ -53,8 +52,8 @@ public class BatchConfig {
     }
 
     @Bean
-    public ItemProcessor processor() {
-        return (ItemProcessor<Book, MongoBook>) book -> {
+    public ItemProcessor<Book, MongoBook> processor() {
+        return book -> {
             MongoBook mongoBook = new MongoBook();
             mongoBook.setName(book.getName());
             mongoBook.setGenre(book.getGenre().getName());
@@ -64,17 +63,17 @@ public class BatchConfig {
     }
 
     @Bean
-    public MongoItemWriter writer() {
-        return new MongoItemWriterBuilder<Book>()
+    public MongoItemWriter<MongoBook> writer() {
+        return new MongoItemWriterBuilder<MongoBook>()
                 .template(mongoTemplate)
                 .build();
     }
 
     @Bean
-    public Job importUserJob(Step step1) {
-        return jobBuilderFactory.get("importUserJob")
+    public Job migrateBookJob(Step migrateBookStep) {
+        return jobBuilderFactory.get("migrateBookJob")
                 .incrementer(new RunIdIncrementer())
-                .flow(step1)
+                .flow(migrateBookStep)
                 .end()
                 .listener(new JobExecutionListener() {
                     @Override
@@ -91,26 +90,26 @@ public class BatchConfig {
     }
 
     @Bean
-    public Step step1(MongoItemWriter writer, ItemReader reader, ItemProcessor itemProcessor) {
-        return stepBuilderFactory.get("step1")
-                .chunk(5)
+    public Step migrateBookStep(MongoItemWriter<MongoBook> writer, ItemReader<Book> reader, ItemProcessor<Book, MongoBook> itemProcessor) {
+        return stepBuilderFactory.get("migrateBookStep")
+                .<Book, MongoBook> chunk(5)
                 .reader(reader)
                 .processor(itemProcessor)
                 .writer(writer)
-                .listener(new ItemReadListener() {
+                .listener(new ItemReadListener<Book> () {
                     public void beforeRead() { logger.info("Начало чтения"); }
-                    public void afterRead(Object o) { logger.info("Конец чтения"); }
+                    public void afterRead(Book o) { logger.info("Конец чтения"); }
                     public void onReadError(Exception e) { logger.info("Ошибка чтения"); }
                 })
-                .listener(new ItemWriteListener() {
+                .listener(new ItemWriteListener<MongoBook>() {
                     public void beforeWrite(List list) { logger.info("Начало записи"); }
                     public void afterWrite(List list) { logger.info("Конец записи"); }
                     public void onWriteError(Exception e, List list) { logger.info("Ошибка записи"); }
                 })
-                .listener(new ItemProcessListener() {
-                    public void beforeProcess(Object o) {logger.info("Начало обработки");}
-                    public void afterProcess(Object o, Object o2) {logger.info("Конец обработки");}
-                    public void onProcessError(Object o, Exception e) {logger.info("Ошбка обработки");}
+                .listener(new ItemProcessListener<Book, MongoBook>() {
+                    public void beforeProcess(Book o) {logger.info("Начало обработки");}
+                    public void afterProcess(Book o, MongoBook o2) {logger.info("Конец обработки");}
+                    public void onProcessError(Book o, Exception e) {logger.info("Ошибка обработки");}
                 })
                 .listener(new ChunkListener() {
                     public void beforeChunk(ChunkContext chunkContext) {logger.info("Начало пачки");}
