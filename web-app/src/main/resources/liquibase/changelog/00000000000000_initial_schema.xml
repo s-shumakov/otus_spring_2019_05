@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="00000000000001" author="shumakov">
+        <createTable tableName="books">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="author_id" type="bigint"/>
+            <column name="genre_id" type="bigint"/>
+        </createTable>
+
+        <createTable tableName="authors">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(255)"/>
+            <column name="last_name" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="genres">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="users">
+            <column name="id" type="serial">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="login" type="varchar(255)"/>
+            <column name="name" type="varchar(255)"/>
+            <column name="password" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="authority">
+            <column name="name" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_authority">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="authority_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="user_id, authority_name" tableName="user_authority"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_authority"
+                                 constraintName="fk_users"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+
+        <addForeignKeyConstraint baseColumnNames="authority_name"
+                                 baseTableName="user_authority"
+                                 constraintName="fk_authority"
+                                 referencedColumnNames="name"
+                                 referencedTableName="authority"/>
+
+        <addForeignKeyConstraint baseColumnNames="author_id"
+                                 baseTableName="books"
+                                 constraintName="fk_authors"
+                                 referencedColumnNames="id"
+                                 referencedTableName="authors"/>
+
+        <addForeignKeyConstraint baseColumnNames="genre_id"
+                                 baseTableName="books"
+                                 constraintName="fk_genres"
+                                 referencedColumnNames="id"
+                                 referencedTableName="genres"/>
+
+    </changeSet>
+
+    <changeSet id="00000000000002" author="shumakov">
+        <loadData
+                file="liquibase/data/users.csv"
+                separator=";"
+                tableName="users">
+        </loadData>
+
+        <loadData
+                file="liquibase/data/authority.csv"
+                separator=";"
+                tableName="authority"/>
+
+        <loadData
+                file="liquibase/data/user_authority.csv"
+                separator=";"
+                tableName="user_authority"/>
+
+        <loadData
+                file="liquibase/data/authors.csv"
+                separator=";"
+                tableName="authors"/>
+
+        <loadData
+                file="liquibase/data/genres.csv"
+                separator=";"
+                tableName="genres"/>
+
+        <loadData
+                file="liquibase/data/books.csv"
+                separator=";"
+                tableName="books"/>
+    </changeSet>
+
+    <changeSet id="00000000000003" author="shumakov">
+        <sql dbms="postgresql" endDelimiter=";">ALTER SEQUENCE authors_id_seq restart with 11;</sql>
+        <sql dbms="postgresql" endDelimiter=";">ALTER SEQUENCE books_id_seq restart with 6;</sql>
+        <sql dbms="postgresql" endDelimiter=";">ALTER SEQUENCE genres_id_seq restart with 11;</sql>
+        <sql dbms="postgresql" endDelimiter=";">ALTER SEQUENCE users_id_seq restart with 3;</sql>
+    </changeSet>
+
+</databaseChangeLog>
