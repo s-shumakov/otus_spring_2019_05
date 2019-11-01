@@ -2,8 +2,6 @@ version: '2'
 services:
   postgresql:
     image: postgres:11.5
-    # volumes:
-    #     - ~/volumes/jhipster/portal/postgresql/:/var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=booklibrary
       - POSTGRES_USER=postgres

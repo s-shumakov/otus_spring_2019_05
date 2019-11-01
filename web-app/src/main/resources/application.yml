@@ -1,7 +1,5 @@
 spring:
   datasource:
-#    if running on Windows 7
-#    url: jdbc:postgresql://192.168.99.100:5432/booklibrary
     url: jdbc:postgresql://localhost:5432/booklibrary
     driverClassName: org.postgresql.Driver
     username: postgres

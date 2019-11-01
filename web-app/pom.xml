@@ -10,7 +10,6 @@
     </parent>
     <groupId>ru.otus.hw</groupId>
     <artifactId>web-app</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>web-app</name>
     <description>Otus home work</description>
 
