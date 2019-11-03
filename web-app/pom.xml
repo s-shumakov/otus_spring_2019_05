@@ -10,6 +10,7 @@
     </parent>
     <groupId>ru.otus.hw</groupId>
     <artifactId>web-app</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <name>web-app</name>
     <description>Otus home work</description>
 
@@ -69,10 +70,19 @@
     </dependencies>
 
     <build>
+        <finalName>web-app</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+                <configuration>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                </configuration>
             </plugin>
         </plugins>
     </build>

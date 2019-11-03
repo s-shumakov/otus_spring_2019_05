@@ -17,7 +17,7 @@ ENV PROJECT_DIR=/opt/project
 RUN mkdir -p $PROJECT_DIR
 WORKDIR $PROJECT_DIR
 
-COPY --from=0 $PROJECT_DIR/target/libriry* $PROJECT_DIR/
+COPY --from=0 $PROJECT_DIR/target/web-app* $PROJECT_DIR/
 
 EXPOSE 8080
 
