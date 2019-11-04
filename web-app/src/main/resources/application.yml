@@ -19,3 +19,18 @@ spring:
     show-sql: false
   liquibase:
     change-log: classpath:liquibase/master.xml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+logging:
+  file: logs/web-app.log
+info:
+  application:
+    name: web-app
+    description: Home work 16
+    version: 0.0.1-SNAPSHOT
