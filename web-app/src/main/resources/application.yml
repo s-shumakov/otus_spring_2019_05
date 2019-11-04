@@ -1,8 +1,8 @@
 spring:
   datasource:
 #    if running on Windows 7 use docker-machine ip
-#    url: jdbc:postgresql://192.168.99.100:5432/booklibrary
-    url: jdbc:postgresql://localhost:5432/booklibrary
+    url: jdbc:postgresql://192.168.99.100:5432/booklibrary
+#    url: jdbc:postgresql://localhost:5432/booklibrary
     driverClassName: org.postgresql.Driver
     username: postgres
     password:
@@ -23,7 +23,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: logfile, metrics, health, info, library
   endpoint:
     health:
       show-details: always
