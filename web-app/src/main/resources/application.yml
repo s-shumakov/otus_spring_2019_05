@@ -1,8 +1,8 @@
 spring:
   datasource:
 #    if running on Windows 7 use docker-machine ip
-#    url: jdbc:postgresql://192.168.99.100:5432/booklibrary
-    url: jdbc:postgresql://localhost:5432/booklibrary
+    url: jdbc:postgresql://192.168.99.100:5432/booklibrary
+#    url: jdbc:postgresql://localhost:5432/booklibrary
     driverClassName: org.postgresql.Driver
     username: postgres
     password:
@@ -19,3 +19,18 @@ spring:
     show-sql: false
   liquibase:
     change-log: classpath:liquibase/master.xml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: logfile, metrics, health, info, library
+  endpoint:
+    health:
+      show-details: always
+logging:
+  file: logs/web-app.log
+info:
+  application:
+    name: web-app
+    description: Home work 16
+    version: 0.0.1-SNAPSHOT
